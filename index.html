@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Signature Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f9fafb; font-family: 'Inter', sans-serif; }
+    /* Improved inputs (plain CSS to avoid @apply in inline styles) */
+    .input { border-radius: 0.5rem; border: 1px solid #d1d5db; background: #fff; padding: 0.5rem 0.75rem; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.04); outline: none; transition: border-color .15s, box-shadow .15s; }
+    .input::placeholder { color: #9ca3af; }
+    .input:hover { border-color: #9ca3af; }
+    .input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+    .input[disabled] { background: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid #e5e7eb;
+      transition: transform 0.15s;
+    }
+    .color-swatch:hover {
+      transform: scale(1.1);
+      border-color: #000;
+    }
+    #signature-preview {
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      background: white;
+      padding: 12px;
+    }
+    .rings-bg {
+      position: relative;
+      overflow: hidden;
+      /* background will be set inline via JS to ensure it copies into email clients */
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-5xl mx-auto space-y-6">
+    <h1 class="text-2xl font-bold text-gray-800">✨ Email Signature Generator</h1>
+
+    <!-- Form -->
+    <div class="bg-white rounded-xl shadow p-6 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input id="fullName" type="text" class="mt-1 w-full input" placeholder="John Doe">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Job Title</label>
+          <input id="jobTitle" type="text" class="mt-1 w-full input" placeholder="Product Manager" list="jobTitles">
+          <datalist id="jobTitles">
+            <option value="Co-Founder & CEO">Co-Founder & CEO</option>
+            <option value="Co-Founder & CTO">Co-Founder & CTO</option>
+            <option value="CEO">CEO</option>
+            <option value="CTO">CTO</option>
+            <option value="COO">COO</option>
+            <option value="CFO">CFO</option>
+            <option value="VP Engineering">VP Engineering</option>
+            <option value="Head of Product">Head of Product</option>
+            <option value="Product Manager">Product Manager</option>
+            <option value="Senior Software Engineer">Senior Software Engineer</option>
+            <option value="Software Engineer">Software Engineer</option>
+            <option value="Sales Manager">Sales Manager</option>
+            <option value="Marketing Manager">Marketing Manager</option>
+            <option value="Account Manager">Account Manager</option>
+          </datalist>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Phone</label>
+          <input id="phone" type="text" class="mt-1 w-full input" placeholder="+971 50 123 4567">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input id="email" type="email" class="mt-1 w-full input" placeholder="name@company.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Website</label>
+          <input id="website" type="text" class="mt-1 w-full input" placeholder="www.company.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Address (optional)</label>
+          <input id="address" type="text" class="mt-1 w-full input" placeholder="123 Main St, City, Country">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Footer line 1 (optional)</label>
+          <input id="rights1" type="text" class="mt-1 w-full input" placeholder="© Company. All rights reserved." list="footerLine1">
+          <datalist id="footerLine1">
+            <option value="© Company. All rights reserved.">© Company. All rights reserved.</option>
+            <option value="This email and any attachments are confidential.">This email and any attachments are confidential.</option>
+            <option value="If you received this email in error, please delete it.">If you received this email in error, please delete it.</option>
+            <option value="Registered in [Country]. Reg No: 123456.">Registered in [Country]. Reg No: 123456.</option>
+            <option value="Building trust beyond payments.">Building trust beyond payments.</option>
+          </datalist>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Footer line 2 (optional)</label>
+          <input id="rights2" type="text" class="mt-1 w-full input" placeholder="This email is confidential." list="footerLine2">
+          <div class="mt-2 flex items-center gap-4 text-sm text-gray-700">
+            <label class="inline-flex items-center gap-2"><input id="rights2Italic" type="checkbox"> Italic</label>
+            <label class="inline-flex items-center gap-2"><input id="rights2UseFg" type="checkbox" checked> Use foreground color</label>
+          </div>
+          <datalist id="footerLine2">
+            <option value="Please consider the environment before printing this email.">Please consider the environment before printing this email.</option>
+            <option value="Company address: 123 Main St, City, Country.">Company address: 123 Main St, City, Country.</option>
+            <option value="VAT No: 000000000">VAT No: 000000000</option>
+            <option value="Support: support@company.com | +971 50 123 4567">Support: support@company.com | +971 50 123 4567</option>
+            <option value="Follow us: www.company.com">Follow us: www.company.com</option>
+          </datalist>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Logo</label>
+          <input id="logoUpload" type="file" accept="image/*" class="mt-1 block w-full text-sm">
+        </div>
+      </div>
+
+      <!-- Colors -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Pick Foreground Color</label>
+        <div id="colorPalette" class="flex gap-2 flex-wrap mb-3"></div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Pick Background (rings) Color</label>
+        <div id="bgColorPalette" class="flex gap-2 flex-wrap"></div>
+        <input id="bgOpacity" type="range" min="0" max="100" value="50" class="w-full mt-2">
+        <p class="text-xs text-gray-500">Adjust rings transparency</p>
+      </div>
+    </div>
+
+    <!-- Signature Preview -->
+    <div>
+      <h2 class="text-lg font-semibold text-gray-700 mb-2">Preview</h2>
+      <div id="signature-preview" class="rings-bg relative">
+        <div id="signatureContent" class="flex items-center gap-4 relative z-10"></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-4">
+      <button onclick="generateSignature()" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">Generate Signature</button>
+      <button onclick="copySignature()" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Copy Signature</button>
+    </div>
+  </div>
+
+  <!-- Color Thief for extracting colors -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+
+  <script>
+    const colorPalette = document.getElementById("colorPalette");
+    const bgColorPalette = document.getElementById("bgColorPalette");
+    const signatureContent = document.getElementById("signatureContent");
+    const bgOpacity = document.getElementById("bgOpacity");
+    const logoUpload = document.getElementById("logoUpload");
+    let selectedColor = "#000000";
+    let selectedBgColor = "#D4B982"; // default gold base
+    let logoBase64 = "";
+
+    // Default + placeholders for logo colors
+    const baseColors = ["#1E3A8A", "#2563EB", "#10B981", "#F59E0B", "#EF4444", "#6B7280", "#000000", "#FFFFFF"];
+    let logoColors = new Array(6).fill(null);
+
+    function renderPalette() {
+      colorPalette.innerHTML = "";
+      [...baseColors, ...logoColors].forEach(c => {
+        const swatch = document.createElement("div");
+        swatch.className = "color-swatch";
+        if (c) {
+          swatch.style.background = c;
+          swatch.onclick = () => {
+            selectedColor = c;
+            updateSignature();
+          };
+        } else {
+          swatch.style.background = "repeating-conic-gradient(#e5e7eb 0% 25%, transparent 0% 50%) 50% / 10px 10px";
+          swatch.style.cursor = "not-allowed";
+        }
+        colorPalette.appendChild(swatch);
+      });
+
+      // Background palette mirrors foreground – includes logo-derived colors with placeholders
+      bgColorPalette.innerHTML = "";
+      [...baseColors, ...logoColors].forEach(c => {
+        const swatch = document.createElement("div");
+        swatch.className = "color-swatch";
+        if (c) {
+          swatch.style.background = c;
+          swatch.onclick = () => { selectedBgColor = c; updateSignature(); };
+        } else {
+          swatch.style.background = "repeating-conic-gradient(#e5e7eb 0% 25%, transparent 0% 50%) 50% / 10px 10px";
+          swatch.style.cursor = "not-allowed";
+        }
+        bgColorPalette.appendChild(swatch);
+      });
+    }
+
+    renderPalette();
+
+    document.querySelectorAll("input").forEach(el => {
+      el.addEventListener("input", updateSignature);
+    });
+    bgOpacity.addEventListener("input", updateSignature);
+
+    // Extract colors + convert logo to Base64
+    logoUpload.addEventListener("change", () => {
+      const file = logoUpload.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        logoBase64 = e.target.result;
+        const img = new Image();
+        img.src = logoBase64;
+        img.onload = () => {
+          const colorThief = new ColorThief();
+          try {
+            const palette = colorThief.getPalette(img, 6);
+            logoColors = palette.map(rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`);
+            renderPalette();
+            // Auto-select: foreground -> first palette color; background -> brightest color
+            if (logoColors[0]) selectedColor = logoColors[0];
+            const brightest = palette.reduce((best, c) => {
+              const lum = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+              return (!best || lum > best.lum) ? { color: `rgb(${c[0]},${c[1]},${c[2]})`, lum } : best;
+            }, null);
+            if (brightest && brightest.color) selectedBgColor = brightest.color;
+          } catch (err) {
+            console.error("Color extraction failed", err);
+          }
+          updateSignature();
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function generateSignature() {
+      updateSignature();
+    }
+
+    async function updateSignature() {
+      const name = document.getElementById("fullName").value || "John Doe";
+      const title = document.getElementById("jobTitle").value || "Product Manager";
+      const phone = document.getElementById("phone").value || "+971 50 123 4567";
+      const email = document.getElementById("email").value || "name@company.com";
+      const website = document.getElementById("website").value || "www.company.com";
+      const address = document.getElementById("address").value || "";
+      const rights1 = document.getElementById("rights1").value || "";
+      const rights2 = document.getElementById("rights2").value || "";
+      const opacity = bgOpacity.value / 100;
+
+      // Build one full-image signature so paste in Outlook matches preview precisely
+      const rights2Italic = document.getElementById("rights2Italic").checked;
+      const rights2UseFg = document.getElementById("rights2UseFg").checked;
+      const fullImage = await buildFullSignatureImage({ name, title, phone, email, website, address, rights1, rights2, rights2Italic, rights2UseFg, logoSrc: logoBase64, fg: selectedColor, ringsOpacity: opacity, ringsColor: selectedBgColor });
+
+      signatureContent.innerHTML = `
+        <img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}" style="display:block; width:${fullImage.width}px; height:auto;" />`;
+
+      // Keep container simple so email clients don't strip styles
+      const preview = document.getElementById("signature-preview");
+      preview.style.background = "#ffffff";
+    }
+
+    // Create a composite image with concentric golden rings and the uploaded logo in front
+    async function buildCompositeLogo(logoSrc) {
+      const canvas = document.createElement("canvas");
+      const width = 220; // canvas dimensions to render details
+      const height = 140;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+
+      // Transparent base
+      ctx.clearRect(0, 0, width, height);
+
+      // Golden ring palette (similar to attachment)
+      const base = { r: 212, g: 185, b: 130 };
+      const ringAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [70, 110, 150, 190, 230];
+
+      // Center the rings slightly left so they sit behind the logo nicely
+      const centerX = 80;
+      const centerY = 70;
+
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${ringAlphas[i]})`;
+        ctx.arc(centerX, centerY, radii[i], 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Draw a soft white card under the logo for contrast
+      const cardW = 96;
+      const cardH = 96;
+      const cardX = centerX - cardW / 2;
+      const cardY = centerY - cardH / 2;
+      ctx.fillStyle = hexToRgba('#ffffff', 1);
+      roundRect(ctx, cardX, cardY, cardW, cardH, 12);
+      ctx.fill();
+
+      // Draw uploaded logo centered on the card
+      const img = await loadImage(logoSrc);
+      const inset = 12;
+      const maxW = cardW - inset * 2;
+      const maxH = cardH - inset * 2;
+      const { drawW, drawH } = fitContain(img.width, img.height, maxW, maxH);
+      const dx = cardX + (cardW - drawW) / 2;
+      const dy = cardY + (cardH - drawH) / 2;
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+
+      return canvas.toDataURL("image/png");
+    }
+
+    // Build a single-image signature (rings across entire banner + logo + text)
+    async function buildFullSignatureImage({ name, title, phone, email, website, address = "", rights1 = "", rights2 = "", rights2Italic = false, rights2UseFg = true, logoSrc, fg, ringsOpacity = 1, ringsColor }) {
+      const width = 900;   // logical CSS pixels
+      const height = 220;  // logical CSS pixels
+      const dpr = Math.max(2, Math.round(window.devicePixelRatio || 1));
+      const canvas = document.createElement('canvas');
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      // Improve rendering quality
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+
+      // Golden rings spanning left side
+      // Parse selected rings color
+      const base = parseColorToRgb(ringsColor || '#D4B982');
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320];
+      const centerX = 190;
+      const centerY = height / 2;
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        // Make the top of the slider more intense using a gain factor
+        const gain = 0.6 + (ringsOpacity ** 1.1) * 1.6; // 0 -> 0.6x, 1 -> 2.2x (clamped below)
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        ctx.arc(centerX, centerY, radii[i], 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Logo only (no rectangle background)
+      const imgBox = 104; const imgX = 118; const imgY = centerY - imgBox / 2;
+      if (logoSrc) {
+        const img = await loadImage(logoSrc);
+        const { drawW, drawH } = fitContain(img.width, img.height, imgBox, imgBox);
+        const dx = imgX + (imgBox - drawW) / 2; const dy = imgY + (imgBox - drawH) / 2;
+        ctx.drawImage(img, dx, dy, drawW, drawH);
+      }
+
+      // Text block
+      const textX = imgX + imgBox + 28;
+      const primary = fg || '#111111';
+      ctx.fillStyle = primary;
+      ctx.font = '700 24px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+      ctx.textBaseline = 'top';
+      ctx.fillText(name, textX, imgY + 6);
+
+      ctx.fillStyle = 'rgba(17,24,39,0.7)';
+      ctx.font = '500 18px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+      ctx.fillText(title, textX, imgY + 38);
+
+      ctx.fillStyle = 'rgba(17,24,39,0.9)';
+      ctx.font = '400 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+      // Contact row with icons from /icons tinted by foreground color
+      // Use vertical centering for perfect icon/text alignment
+      const rowCenterY = imgY + 70 + 8; // compensate for switching to 'middle' baseline
+      ctx.textBaseline = 'middle';
+      let cursorX = textX;
+      const iconSize = 18;
+      const gapAfterIcon = 8;
+      const gapAfterText = 12;
+      const sep = '|';
+      const sepColor = 'rgba(107,114,128,0.9)';
+
+      const [phoneIcon, emailIcon, globeIcon] = await Promise.all([
+        loadTintedSvg('icons/user-id.svg', primary),
+        loadTintedSvg('icons/inbox.svg', primary),
+        loadTintedSvg('icons/global.svg', primary)
+      ]);
+
+      // phone
+      if (phoneIcon) { ctx.drawImage(phoneIcon, cursorX, rowCenterY - iconSize/2, iconSize, iconSize); }
+      cursorX += iconSize + gapAfterIcon;
+      ctx.fillStyle = 'rgba(17,24,39,0.9)';
+      ctx.fillText(phone, cursorX, rowCenterY);
+      cursorX += ctx.measureText(phone).width + gapAfterText;
+      ctx.fillStyle = sepColor; ctx.fillText(sep, cursorX, rowCenterY); cursorX += 14;
+
+      // email
+      if (emailIcon) { ctx.drawImage(emailIcon, cursorX, rowCenterY - iconSize/2, iconSize, iconSize); }
+      cursorX += iconSize + gapAfterIcon;
+      ctx.fillStyle = 'rgba(17,24,39,0.9)';
+      ctx.fillText(email, cursorX, rowCenterY);
+      cursorX += ctx.measureText(email).width + gapAfterText;
+      ctx.fillStyle = sepColor; ctx.fillText(sep, cursorX, rowCenterY); cursorX += 14;
+
+      // website
+      if (globeIcon) { ctx.drawImage(globeIcon, cursorX, rowCenterY - iconSize/2, iconSize, iconSize); }
+      cursorX += iconSize + gapAfterIcon;
+      ctx.fillStyle = 'rgba(17,24,39,0.9)';
+      ctx.fillText(website, cursorX, rowCenterY);
+
+      // Optional address and rights lines under contact row
+      let extraY = rowCenterY + 26;
+      ctx.textBaseline = 'alphabetic';
+      ctx.font = '400 14px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif';
+      ctx.fillStyle = 'rgba(55,65,81,0.9)';
+      if (address && address.trim().length > 0) {
+        ctx.fillText(address, textX, extraY);
+        extraY += 20;
+      }
+      if (rights1 && rights1.trim().length > 0) {
+        ctx.fillStyle = 'rgba(17,24,39,0.9)';
+        ctx.fillText(rights1, textX, extraY);
+        extraY += 18;
+      }
+      if (rights2 && rights2.trim().length > 0) {
+        ctx.fillStyle = rights2UseFg ? primary : 'rgba(107,114,128,0.95)';
+        ctx.font = `${rights2Italic ? 'italic ' : ''}400 14px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
+        ctx.fillText(rights2, textX, extraY);
+      }
+
+      return { src: canvas.toDataURL('image/png'), width, height };
+    }
+
+    function parseColorToRgb(color) {
+      if (color.startsWith('rgb')) {
+        const parts = color.replace(/rgba?\(|\)|\s/g, '').split(',');
+        return { r: +parts[0], g: +parts[1], b: +parts[2] };
+      }
+      const hex = color.replace('#','');
+      const bigint = parseInt(hex.length === 3 ? hex.split('').map(c=>c+c).join('') : hex, 16);
+      return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+    }
+
+    // Load SVG, tint fill color, and return as Image for canvas
+    async function loadTintedSvg(path, color) {
+      try {
+        const res = await fetch(path);
+        const svg = await res.text();
+        const tinted = svg.replace(/fill="#?[0-9A-Fa-f]{3,6}"/g, `fill="${color}"`);
+        const blob = new Blob([tinted], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const image = await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+          img.onerror = err => { URL.revokeObjectURL(url); resolve(null); };
+          img.src = url;
+        });
+        return image;
+      } catch (e) {
+        return null;
+      }
+    }
+    function fitContain(srcW, srcH, maxW, maxH) {
+      const ratio = Math.min(maxW / srcW, maxH / srcH);
+      return { drawW: Math.round(srcW * ratio), drawH: Math.round(srcH * ratio) };
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const i = new Image();
+        i.crossOrigin = 'anonymous';
+        i.onload = () => resolve(i);
+        i.onerror = reject;
+        i.src = src;
+      });
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    async function copySignature() {
+      // Copy only the generated image HTML for maximum compatibility
+      const img = document.querySelector('#signatureContent img');
+      let html = "";
+      if (img && img.src) {
+        const w = img.getAttribute('width') || img.width;
+        const h = img.getAttribute('height') || img.height;
+        html = `<img src="${img.src}" alt="email signature" width="${w}" height="${h}" />`;
+      } else {
+        // Fallback: rebuild immediately
+        const name = document.getElementById("fullName").value || "John Doe";
+        const title = document.getElementById("jobTitle").value || "Product Manager";
+        const phone = document.getElementById("phone").value || "+971 50 123 4567";
+        const email = document.getElementById("email").value || "name@company.com";
+        const website = document.getElementById("website").value || "www.company.com";
+        const opacity = bgOpacity.value / 100;
+        const address = document.getElementById("address").value || "";
+        const rights1 = document.getElementById("rights1").value || "";
+        const rights2 = document.getElementById("rights2").value || "";
+        const rights2Italic = document.getElementById("rights2Italic").checked;
+        const rights2UseFg = document.getElementById("rights2UseFg").checked;
+        const fullImage = await buildFullSignatureImage({ name, title, phone, email, website, address, rights1, rights2, rights2Italic, rights2UseFg, logoSrc: logoBase64, fg: selectedColor, ringsOpacity: opacity, ringsColor: selectedBgColor });
+        html = `<img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}" />`;
+      }
+
+      const blob = new Blob([html], { type: "text/html" });
+      const data = [new ClipboardItem({ "text/html": blob })];
+      navigator.clipboard.write(data).then(() => {
+        showToast("Signature copied! Paste into Gmail/Outlook.", "success");
+      }).catch(err => {
+        console.error(err);
+        showToast("Copy failed. Try Chrome/Edge.", "error");
+      });
+    }
+
+    function hexToRgba(hex, opacity) {
+      if (hex.startsWith("rgb")) return hex.replace(")", `,${opacity})`).replace("rgb","rgba");
+      const bigint = parseInt(hex.replace("#",""), 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r},${g},${b},${opacity})`;
+    }
+
+    updateSignature();
+
+    // Lightweight toast using Tailwind classes
+    function showToast(message, type = "success") {
+      const isError = type === "error";
+      const toast = document.createElement("div");
+      toast.className = `fixed left-1/2 -translate-x-1/2 top-6 z-50 px-4 py-2 rounded-lg shadow-lg text-white text-sm
+        ${isError ? "bg-red-600" : "bg-green-600"} opacity-0 translate-y-2 transition-all duration-300`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      // animate in
+      requestAnimationFrame(() => {
+        toast.classList.remove("opacity-0", "translate-y-2");
+        toast.classList.add("opacity-100", "translate-y-0");
+      });
+      // auto hide
+      setTimeout(() => {
+        toast.classList.remove("opacity-100", "translate-y-0");
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+      }, 2200);
+    }
+  </script>
+</body>
+</html>
