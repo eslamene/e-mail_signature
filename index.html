@@ -50,6 +50,16 @@
     <div class="bg-white rounded-xl shadow p-6 space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div>
+          <label class="block text-sm font-medium text-gray-700">Template</label>
+          <select id="templateSelect" class="mt-1 w-full input">
+            <option value="">Custom</option>
+            <option value="Flagshipfintech">Flagshipfintech</option>
+            <option value="cashfloweg">cashfloweg</option>
+            <option value="79-pay">79-pay</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">Select a preset to auto-fill logo and company details.</p>
+        </div>
+        <div>
           <label class="block text-sm font-medium text-gray-700">Full Name</label>
           <input id="fullName" type="text" class="mt-1 w-full input" placeholder="John Doe">
         </div>
@@ -91,9 +101,9 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Footer line 1 (optional)</label>
-          <input id="rights1" type="text" class="mt-1 w-full input" placeholder="© Flagship Fintech. All rights reserved." list="footerLine1">
+          <input id="rights1" type="text" class="mt-1 w-full input" placeholder="© Company. All rights reserved." list="footerLine1">
           <datalist id="footerLine1">
-            <option value="© Flagship Fintech. All rights reserved.">© Flagship Fintech. All rights reserved.</option>
+            <option value="© Company. All rights reserved.">© Company. All rights reserved.</option>
             <option value="This email and any attachments are confidential.">This email and any attachments are confidential.</option>
             <option value="If you received this email in error, please delete it.">If you received this email in error, please delete it.</option>
             <option value="Registered in [Country]. Reg No: 123456.">Registered in [Country]. Reg No: 123456.</option>
@@ -117,7 +127,7 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Logo</label>
-          <input id="logoUpload" type="file" accept="image/*" class="mt-1 block w-full text-sm">
+          <input id="logoUpload" type="file" accept="image/*,.svg" class="mt-1 block w-full text-sm">
         </div>
       </div>
 
@@ -145,6 +155,11 @@
       <button onclick="generateSignature()" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">Generate Signature</button>
       <button onclick="copySignature()" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Copy Signature</button>
     </div>
+
+    <!-- Footer -->
+    <div class="pt-4 text-center text-xs text-gray-500">
+      Designed by and copyrights © Flagship Fintech
+    </div>
   </div>
 
   <!-- Color Thief for extracting colors -->
@@ -156,6 +171,7 @@
     const signatureContent = document.getElementById("signatureContent");
     const bgOpacity = document.getElementById("bgOpacity");
     const logoUpload = document.getElementById("logoUpload");
+    const templateSelect = document.getElementById("templateSelect");
     let selectedColor = "#000000";
     let selectedBgColor = "#D4B982"; // default gold base
     let logoBase64 = "";
@@ -204,18 +220,37 @@
       el.addEventListener("input", updateSignature);
     });
     bgOpacity.addEventListener("input", updateSignature);
+    templateSelect.addEventListener("change", () => applyTemplate(templateSelect.value));
 
     // Extract colors + convert logo to Base64
     logoUpload.addEventListener("change", () => {
       const file = logoUpload.files[0];
       if (!file) return;
 
+      // SVGs must be rasterized before color extraction; handle both PNG/JPG and SVG
       const reader = new FileReader();
       reader.onload = function(e) {
-        logoBase64 = e.target.result;
-        const img = new Image();
-        img.src = logoBase64;
-        img.onload = () => {
+        const result = e.target.result;
+        const isSvg = file.type === 'image/svg+xml' || (file.name || '').toLowerCase().endsWith('.svg');
+        if (isSvg) {
+          rasterizeSvgToPng(result, 512, 512).then((pngDataUrl) => {
+            logoBase64 = pngDataUrl;
+            extractLogoPaletteAndRender(pngDataUrl);
+          }).catch(()=>{
+            showToast('Failed to process SVG logo', 'error');
+          });
+        } else {
+          logoBase64 = result;
+          extractLogoPaletteAndRender(result);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function extractLogoPaletteAndRender(dataUrl) {
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = () => {
           const colorThief = new ColorThief();
           try {
             const palette = colorThief.getPalette(img, 6);
@@ -232,13 +267,119 @@
             console.error("Color extraction failed", err);
           }
           updateSignature();
-        };
       };
-      reader.readAsDataURL(file);
-    });
+    }
+
+    // Rasterize SVG to PNG data URL for consistent canvas operations
+    function rasterizeSvgToPng(svgDataUrl, width, height) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0,0,width,height);
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = reject;
+        img.src = svgDataUrl;
+      });
+    }
 
     function generateSignature() {
       updateSignature();
+    }
+
+    // Preset templates mapping
+    let templates = {};
+    // Load dynamic templates.json, populate dropdown
+    fetch('templates.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data || !Array.isArray(data.templates)) return;
+        const select = document.getElementById('templateSelect');
+        // Remove existing non-custom options
+        [...select.querySelectorAll('option')].forEach(opt => { if (opt.value) opt.remove(); });
+        templates = {};
+        data.templates.forEach(t => {
+          templates[t.key] = t;
+          const opt = document.createElement('option');
+          opt.value = t.key; opt.textContent = t.label || t.key;
+          select.appendChild(opt);
+        });
+      }).catch(()=>{});
+
+    async function applyTemplate(key) {
+      if (!key || !templates[key]) return;
+      const t = templates[key];
+      // Update all fields from template
+      const fieldMap = {
+        fullName: "fullName",
+        jobTitle: "jobTitle",
+        phone: "phone",
+        website: "website",
+        address: "address",
+        rights1: "rights1",
+        rights2: "rights2",
+      };
+      Object.entries(fieldMap).forEach(([srcKey, elId]) => {
+        const el = document.getElementById(elId);
+        if (el && t && t.fields && Object.prototype.hasOwnProperty.call(t.fields, srcKey)) {
+          el.value = t.fields[srcKey] || "";
+        }
+      });
+      // Email: keep current local part if present, otherwise 'name'
+      const emailEl = document.getElementById("email");
+      const currentLocal = (emailEl.value.split('@')[0] || 'name').trim() || 'name';
+      if (t && t.emailDomain) emailEl.value = `${currentLocal}@${t.emailDomain}`;
+      try {
+        let dataUrl = null;
+        if (t && Array.isArray(t.logos)) {
+          for (const p of t.logos) { dataUrl = await fetchToDataURL(p); if (dataUrl) break; }
+        } else if (t && t.logo) {
+          dataUrl = await fetchToDataURL(t.logo);
+        }
+        if (dataUrl) {
+          logoBase64 = dataUrl;
+          const img = new Image();
+          img.src = logoBase64;
+          img.onload = () => {
+            const colorThief = new ColorThief();
+            try {
+              const palette = colorThief.getPalette(img, 6);
+              logoColors = palette.map(rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`);
+              renderPalette();
+              if (logoColors[0]) selectedColor = logoColors[0];
+              const brightest = palette.reduce((best, c) => {
+                const lum = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+                return (!best || lum > best.lum) ? { color: `rgb(${c[0]},${c[1]},${c[2]})`, lum } : best;
+              }, null);
+              if (brightest && brightest.color) selectedBgColor = brightest.color;
+            } catch (e) { /* ignore color extraction errors */ }
+            updateSignature();
+          };
+        } else {
+          showToast("Template logo not found. Place files under /logos.", "error");
+        }
+      } catch (e) {
+        showToast("Failed to load template logo.", "error");
+      }
+    }
+
+    async function fetchToDataURL(path) {
+      try {
+        const res = await fetch(path);
+        if (!res.ok) return null;
+        const blob = await res.blob();
+        return await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+      } catch (e) {
+        return null;
+      }
     }
 
     async function updateSignature() {
