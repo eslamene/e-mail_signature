@@ -40,6 +40,42 @@
       /* background will be set inline via JS to ensure it copies into email clients */
       background-color: #ffffff;
     }
+    
+    /* Custom slider styling */
+    .slider::-webkit-slider-thumb {
+      appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+    }
+    
+    .slider::-webkit-slider-thumb:hover {
+      background: #2563eb;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .slider::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+    }
+    
+    .slider::-moz-range-thumb:hover {
+      background: #2563eb;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body class="p-6">
@@ -59,6 +95,7 @@
           </select>
           <p class="text-xs text-gray-500 mt-1">Select a preset to auto-fill logo and company details.</p>
         </div>
+        
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Custom Logo</label>
           <div class="relative">
@@ -92,30 +129,46 @@
             </div>
           </div>
         </div>
+<div>        <label class="block text-sm font-medium text-gray-700 mb-2">Background Pattern</label>
+  <select id="bgPattern" class="mt-1 w-full input">
+    <option value="circles">Concentric Circles</option>
+    <option value="concentric-squares">Concentric Squares</option>
+    <option value="concentric-triangles">Concentric Triangles</option>
+    <option value="concentric-hexagons">Concentric Hexagons</option>
+    <option value="concentric-diamonds">Concentric Diamonds</option>
+    <option value="gradient-circles">Gradient Circles</option>
+    <option value="gradient-blobs">Gradient Blobs</option>
+    <option value="gradient-feathers">Gradient Feathers</option>
+    <option value="gradient-rectangles">Gradient Rectangles</option>
+    <option value="gradient-arrows">Gradient Arrows</option>
+    <option value="gradient-diamonds">Gradient Diamonds</option>
+    <option value="gradient-swoosh">Gradient Swoosh</option>
+    <option value="gradient-rings">Gradient Rings</option>
+  </select></div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Full Name</label>
-          <input id="fullName" type="text" class="mt-1 w-full input" placeholder="John Doe">
+          <label class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-500">*</span></label>
+          <input id="fullName" type="text" class="mt-1 w-full input" placeholder="Enter your full name" required>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Job Title</label>
+          <label class="block text-sm font-medium text-gray-700">Job Title <span class="text-red-500">*</span></label>
           <div class="relative mt-1">
-            <input id="jobTitle" type="text" class="w-full input" placeholder="Product Manager" autocomplete="off">
+            <input id="jobTitle" type="text" class="w-full input" placeholder="Select or type your job title" autocomplete="off" required>
             <div id="jobTitleDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto">
               <!-- Options will be populated dynamically -->
             </div>
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Email</label>
-          <input id="email" type="email" class="mt-1 w-full input" placeholder="name@company.com">
+          <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+          <input id="email" type="email" class="mt-1 w-full input" placeholder="Enter your email address" required>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Phone</label>
-          <input id="phone" type="text" class="mt-1 w-full input" placeholder="+971 50 123 4567">
+          <label class="block text-sm font-medium text-gray-700">Phone <span class="text-red-500">*</span></label>
+          <input id="phone" type="text" class="mt-1 w-full input" placeholder="Enter your phone number" required>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Website</label>
-          <input id="website" type="text" class="mt-1 w-full input" placeholder="www.company.com">
+          <label class="block text-sm font-medium text-gray-700">Website <span class="text-red-500">*</span></label>
+          <input id="website" type="text" class="mt-1 w-full input" placeholder="Enter your website URL" required>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Address (optional)</label>
@@ -136,9 +189,27 @@
         <div>
           <label class="block text-sm font-medium text-gray-700">Footer line 2 (optional)</label>
           <input id="rights2" type="text" class="mt-1 w-full input" placeholder="This email is confidential." list="footerLine2">
-          <div class="mt-2 flex items-center gap-4 text-sm text-gray-700">
-            <label class="inline-flex items-center gap-2"><input id="rights2Italic" type="checkbox"> Italic</label>
-            <label class="inline-flex items-center gap-2"><input id="rights2UseFg" type="checkbox" checked> Use foreground color</label>
+          <div class="mt-2 flex items-center gap-6 text-sm text-gray-700">
+            <label class="inline-flex items-center cursor-pointer group">
+              <div class="relative">
+                <input id="rights2Italic" type="checkbox" class="sr-only peer">
+                <div class="w-5 h-5 bg-white peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-opacity-50 rounded-md peer-checked:bg-blue-600 peer-checked:border-blue-600 border-2 border-gray-300 transition-all duration-200 group-hover:border-blue-400"></div>
+                <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <span class="ml-3 font-medium group-hover:text-blue-600 transition-colors duration-200">Italic</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer group">
+              <div class="relative">
+                <input id="rights2UseFg" type="checkbox" checked class="sr-only peer">
+                <div class="w-5 h-5 bg-white peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-opacity-50 rounded-md peer-checked:bg-blue-600 peer-checked:border-blue-600 border-2 border-gray-300 transition-all duration-200 group-hover:border-blue-400"></div>
+                <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <span class="ml-3 font-medium group-hover:text-blue-600 transition-colors duration-200">Use foreground color</span>
+            </label>
           </div>
           <datalist id="footerLine2">
             <option value="Please consider the environment before printing this email.">Please consider the environment before printing this email.</option>
@@ -154,10 +225,25 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Pick Foreground Color</label>
         <div id="colorPalette" class="flex gap-2 flex-wrap mb-3"></div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Pick Background (rings) Color</label>
+
+        <label class="block text-sm font-medium text-gray-700 mb-2 mt-3">Pick Background Color</label>
         <div id="bgColorPalette" class="flex gap-2 flex-wrap"></div>
-        <input id="bgOpacity" type="range" min="0" max="100" value="50" class="w-full mt-2">
-        <p class="text-xs text-gray-500">Adjust rings transparency</p>
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-sm font-medium text-gray-700">Adjust pattern transparency</label>
+            <span id="opacityValue" class="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">50%</span>
+          </div>
+          <div class="relative">
+            <div class="w-full h-2 bg-gray-200 rounded-lg relative">
+              <div id="sliderProgress" class="absolute top-0 left-0 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg pointer-events-none" style="width: 50%"></div>
+            </div>
+            <input id="bgOpacity" type="range" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-2 bg-transparent appearance-none cursor-pointer slider">
+          </div>
+          <div class="flex justify-between text-xs text-gray-400 mt-1">
+            <span>0%</span>
+            <span>100%</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -169,7 +255,7 @@
       </div>
     </div>
 
-      <!-- Actions -->
+    <!-- Actions -->
       <div class="flex gap-3 justify-center">
         <button onclick="copySignature('small')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg shadow-md hover:from-emerald-600 hover:to-teal-700 text-sm font-medium transform hover:scale-105 transition-all duration-200">Copy Small</button>
         <button onclick="copySignature('medium')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg shadow-md hover:from-orange-600 hover:to-red-600 text-sm font-medium transform hover:scale-105 transition-all duration-200">Copy Medium</button>
@@ -190,6 +276,7 @@
     const bgColorPalette = document.getElementById("bgColorPalette");
     const signatureContent = document.getElementById("signatureContent");
     const bgOpacity = document.getElementById("bgOpacity");
+    const bgPattern = document.getElementById("bgPattern");
     const logoUpload = document.getElementById("logoUpload");
     const templateSelect = document.getElementById("templateSelect");
     let selectedColor = "#000000";
@@ -235,12 +322,31 @@
     }
 
     renderPalette();
+    
+    // Initialize slider visual
+    updateSliderVisual();
 
     document.querySelectorAll("input").forEach(el => {
       el.addEventListener("input", updateSignature);
     });
-    bgOpacity.addEventListener("input", updateSignature);
+    bgOpacity.addEventListener("input", () => {
+      updateSignature();
+      updateSliderVisual();
+    });
+    
+    function updateSliderVisual() {
+      const value = bgOpacity.value;
+      const percentage = value + '%';
+      
+      // Update the value display
+      document.getElementById('opacityValue').textContent = percentage;
+      
+      // Update the progress bar
+      const progressBar = document.getElementById('sliderProgress');
+      progressBar.style.width = percentage;
+    }
     templateSelect.addEventListener("change", () => applyTemplate(templateSelect.value));
+    bgPattern.addEventListener("change", updateSignature);
 
     // Enhanced logo upload functionality
     const logoUploadArea = document.getElementById('logoUploadArea');
@@ -536,7 +642,7 @@
       const input = document.getElementById('jobTitle');
       if (input) {
         input.value = title;
-        updateSignature();
+      updateSignature();
       }
       hideJobTitleDropdown();
     }
@@ -618,11 +724,11 @@
     }
 
     async function updateSignature() {
-      const name = document.getElementById("fullName").value || "John Doe";
-      const title = document.getElementById("jobTitle").value || "Product Manager";
-      const phone = document.getElementById("phone").value || "+971 50 123 4567";
-      const email = document.getElementById("email").value || "name@company.com";
-      const website = document.getElementById("website").value || "www.company.com";
+      const name = document.getElementById("fullName").value || "";
+      const title = document.getElementById("jobTitle").value || "";
+      const phone = document.getElementById("phone").value || "";
+      const email = document.getElementById("email").value || "";
+      const website = document.getElementById("website").value || "";
       const address = document.getElementById("address").value || "";
       const rights1 = document.getElementById("rights1").value || "";
       const rights2 = document.getElementById("rights2").value || "";
@@ -691,7 +797,741 @@
       return canvas.toDataURL("image/png");
     }
 
-    // Build a single-image signature (rings across entire banner + logo + text)
+    // Pattern generation functions
+    function generatePattern(patternType, color, opacity, width, height, scale) {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      
+      const base = parseColorToRgb(color || '#D4B982');
+      const alpha = opacity || 0.3;
+      
+      // Set default styles
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      ctx.strokeStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      switch(patternType) {
+        case 'circles':
+          return generateCirclesPattern(ctx, width, height, scale, base, alpha);
+        case 'concentric-squares':
+          return generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha);
+        case 'concentric-triangles':
+          return generateConcentricTrianglesPattern(ctx, width, height, scale, base, alpha);
+        case 'concentric-hexagons':
+          return generateConcentricHexagonsPattern(ctx, width, height, scale, base, alpha);
+        case 'concentric-diamonds':
+          return generateConcentricDiamondsPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-circles':
+          return generateGradientCirclesPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-blobs':
+          return generateGradientBlobsPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-feathers':
+          return generateGradientFeathersPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-rectangles':
+          return generateGradientRectanglesPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-arrows':
+          return generateGradientArrowsPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-diamonds':
+          return generateGradientDiamondsPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-swoosh':
+          return generateGradientSwooshPattern(ctx, width, height, scale, base, alpha);
+        case 'gradient-rings':
+          return generateGradientRingsPattern(ctx, width, height, scale, base, alpha);
+        default:
+          return generateCirclesPattern(ctx, width, height, scale, base, alpha);
+      }
+    }
+    
+    function generateCirclesPattern(ctx, width, height, scale, base, alpha) {
+      // Original concentric circles pattern
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+      
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        const gain = 0.6 + (alpha ** 1.1) * 1.6;
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        ctx.arc(centerX, centerY, radii[i], 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return ctx;
+    }
+    
+    function generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha) {
+      // Concentric squares pattern - larger to match circle coverage
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+      
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        const gain = 0.6 + (alpha ** 1.1) * 1.6;
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        
+        // Make squares larger to match circle coverage - extend further right
+        const sideLength = radii[i] * 1.8; // Increased multiplier for better coverage
+        const halfSide = sideLength / 2;
+        ctx.fillRect(centerX - halfSide, centerY - halfSide, sideLength, sideLength);
+      }
+      return ctx;
+    }
+    
+    function generateConcentricTrianglesPattern(ctx, width, height, scale, base, alpha) {
+      // Concentric triangles pattern - larger to match circle coverage
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+      
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        const gain = 0.6 + (alpha ** 1.1) * 1.6;
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        
+        // Make triangles larger to match circle coverage
+        const sideLength = radii[i] * 2.0; // Increased multiplier for better coverage
+        const triangleHeight = sideLength * 0.866; // Height of equilateral triangle
+        ctx.moveTo(centerX, centerY - triangleHeight / 2);
+        ctx.lineTo(centerX - sideLength / 2, centerY + triangleHeight / 2);
+        ctx.lineTo(centerX + sideLength / 2, centerY + triangleHeight / 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+      return ctx;
+    }
+    
+    function generateConcentricHexagonsPattern(ctx, width, height, scale, base, alpha) {
+      // Concentric hexagons pattern - larger to match circle coverage
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+      
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        const gain = 0.6 + (alpha ** 1.1) * 1.6;
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        
+        // Make hexagons larger to match circle coverage
+        const hexRadius = radii[i] * 1.2; // Increased multiplier for better coverage
+        for (let j = 0; j < 6; j++) {
+          const angle = (j / 6) * Math.PI * 2;
+          const x = centerX + Math.cos(angle) * hexRadius;
+          const y = centerY + Math.sin(angle) * hexRadius;
+          if (j === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+      return ctx;
+    }
+    
+    function generateConcentricDiamondsPattern(ctx, width, height, scale, base, alpha) {
+      // Concentric diamonds pattern - larger to match circle coverage
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+      
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        const gain = 0.6 + (alpha ** 1.1) * 1.6;
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        
+        // Make diamonds larger to match circle coverage
+        const halfDiagonal = radii[i] * 1.4; // Increased multiplier for better coverage
+        ctx.moveTo(centerX, centerY - halfDiagonal);
+        ctx.lineTo(centerX + halfDiagonal, centerY);
+        ctx.lineTo(centerX, centerY + halfDiagonal);
+        ctx.lineTo(centerX - halfDiagonal, centerY);
+        ctx.closePath();
+        ctx.fill();
+      }
+      return ctx;
+    }
+    
+    function generateGradientCirclesPattern(ctx, width, height, scale, base, alpha) {
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
+      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+      
+      for (let i = 0; i < radii.length; i++) {
+        ctx.beginPath();
+        const gain = 0.6 + (alpha ** 1.1) * 1.6;
+        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
+        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
+        ctx.arc(centerX, centerY, radii[i], 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return ctx;
+    }
+    
+    function generateDotsPattern(ctx, width, height, scale, base, alpha) {
+      // Create scattered dots of varying sizes like in the reference images
+      const dots = [
+        { x: 0.1, y: 0.1, size: 0.8 }, // Top left
+        { x: 0.05, y: 0.3, size: 0.6 },
+        { x: 0.15, y: 0.05, size: 0.4 },
+        { x: 0.9, y: 0.1, size: 0.7 }, // Top right
+        { x: 0.95, y: 0.25, size: 0.5 },
+        { x: 0.85, y: 0.05, size: 0.3 },
+        { x: 0.1, y: 0.9, size: 0.6 }, // Bottom left
+        { x: 0.05, y: 0.7, size: 0.4 },
+        { x: 0.15, y: 0.95, size: 0.5 },
+        { x: 0.9, y: 0.9, size: 0.8 }, // Bottom right
+        { x: 0.95, y: 0.75, size: 0.6 },
+        { x: 0.85, y: 0.95, size: 0.4 }
+      ];
+      
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      dots.forEach(dot => {
+        const x = dot.x * width;
+        const y = dot.y * height;
+        const size = Math.round(dot.size * 8 * scale);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+    
+    function generateLinesPattern(ctx, width, height, scale, base, alpha) {
+      // Create flowing curved lines like brushstrokes
+      const lineWidth = Math.round(3 * scale);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      ctx.lineCap = 'round';
+      
+      // Top left flowing line
+      ctx.beginPath();
+      ctx.moveTo(0, height * 0.2);
+      ctx.quadraticCurveTo(width * 0.3, height * 0.1, width * 0.6, height * 0.3);
+      ctx.stroke();
+      
+      // Bottom right flowing line
+      ctx.beginPath();
+      ctx.moveTo(width * 0.4, height * 0.7);
+      ctx.quadraticCurveTo(width * 0.7, height * 0.9, width, height * 0.8);
+      ctx.stroke();
+      
+      // Center accent line
+      ctx.beginPath();
+      ctx.moveTo(width * 0.1, height * 0.5);
+      ctx.quadraticCurveTo(width * 0.5, height * 0.4, width * 0.9, height * 0.6);
+      ctx.stroke();
+      
+      return ctx;
+    }
+    
+    function generateGridPattern(ctx, width, height, scale, base, alpha) {
+      // Create a subtle grid pattern like graph paper
+      const gridSize = Math.round(20 * scale);
+      const lineWidth = Math.round(0.5 * scale);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = `rgba(${base.r},${base.g},${base.b},${alpha * 0.3})`;
+      
+      // Vertical lines
+      for (let x = 0; x <= width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      
+      // Horizontal lines
+      for (let y = 0; y <= height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      
+      // Add some accent dots at intersections
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha * 0.5})`;
+      for (let x = gridSize; x < width; x += gridSize * 3) {
+        for (let y = gridSize; y < height; y += gridSize * 3) {
+          ctx.beginPath();
+          ctx.arc(x, y, Math.round(1 * scale), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      return ctx;
+    }
+    
+    function generateWavesPattern(ctx, width, height, scale, base, alpha) {
+      // Create flowing wave-like curves
+      const lineWidth = Math.round(4 * scale);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      ctx.lineCap = 'round';
+      
+      // Top wave
+      ctx.beginPath();
+      for (let x = 0; x < width; x++) {
+        const y = height * 0.2 + Math.sin(x * 0.01) * 15 * scale;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Bottom wave
+      ctx.beginPath();
+      for (let x = 0; x < width; x++) {
+        const y = height * 0.8 + Math.sin(x * 0.008) * 12 * scale;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Center accent wave
+      ctx.beginPath();
+      for (let x = 0; x < width; x++) {
+        const y = height * 0.5 + Math.sin(x * 0.012) * 8 * scale;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      return ctx;
+    }
+    
+    function generateHexagonsPattern(ctx, width, height, scale, base, alpha) {
+      const hexSize = Math.round(15 * scale);
+      const spacing = Math.round(30 * scale);
+      
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      for (let x = 0; x < width + hexSize; x += spacing) {
+        for (let y = 0; y < height + hexSize; y += spacing * 0.866) {
+          drawHexagon(ctx, x, y, hexSize);
+        }
+      }
+      return ctx;
+    }
+    
+    function drawHexagon(ctx, x, y, size) {
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i;
+        const hexX = x + size * Math.cos(angle);
+        const hexY = y + size * Math.sin(angle);
+        if (i === 0) ctx.moveTo(hexX, hexY);
+        else ctx.lineTo(hexX, hexY);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    
+    function generateTrianglesPattern(ctx, width, height, scale, base, alpha) {
+      const triangleSize = Math.round(20 * scale);
+      const spacing = Math.round(25 * scale);
+      
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          drawTriangle(ctx, x, y, triangleSize);
+        }
+      }
+      return ctx;
+    }
+    
+    function drawTriangle(ctx, x, y, size) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + size, y);
+      ctx.lineTo(x + size/2, y + size);
+      ctx.closePath();
+      ctx.fill();
+    }
+    
+    function generateSquaresPattern(ctx, width, height, scale, base, alpha) {
+      const squareSize = Math.round(18 * scale);
+      const spacing = Math.round(25 * scale);
+      
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          ctx.fillRect(x, y, squareSize, squareSize);
+        }
+      }
+      return ctx;
+    }
+    
+    function generateStarsPattern(ctx, width, height, scale, base, alpha) {
+      const starSize = Math.round(12 * scale);
+      const spacing = Math.round(30 * scale);
+      
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          drawStar(ctx, x, y, starSize);
+        }
+      }
+      return ctx;
+    }
+    
+    function drawStar(ctx, x, y, size) {
+      const spikes = 5;
+      const outerRadius = size;
+      const innerRadius = size * 0.4;
+      
+      ctx.beginPath();
+      for (let i = 0; i < spikes * 2; i++) {
+        const angle = (Math.PI / spikes) * i;
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const starX = x + radius * Math.cos(angle - Math.PI/2);
+        const starY = y + radius * Math.sin(angle - Math.PI/2);
+        if (i === 0) ctx.moveTo(starX, starY);
+        else ctx.lineTo(starX, starY);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    
+    function generateSpiralPattern(ctx, width, height, scale, base, alpha) {
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const maxRadius = Math.min(width, height) / 2;
+      const lineWidth = Math.round(3 * scale);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      ctx.beginPath();
+      for (let angle = 0; angle < Math.PI * 8; angle += 0.1) {
+        const radius = (angle / (Math.PI * 8)) * maxRadius;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        if (angle === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      return ctx;
+    }
+    
+    function generateGeometricPattern(ctx, width, height, scale, base, alpha) {
+      const shapes = ['circle', 'square', 'triangle'];
+      const shapeSize = Math.round(15 * scale);
+      const spacing = Math.round(35 * scale);
+      
+      ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${alpha})`;
+      
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          const shape = shapes[Math.floor(Math.random() * shapes.length)];
+          switch(shape) {
+            case 'circle':
+              ctx.beginPath();
+              ctx.arc(x, y, shapeSize/2, 0, Math.PI * 2);
+              ctx.fill();
+              break;
+            case 'square':
+              ctx.fillRect(x - shapeSize/2, y - shapeSize/2, shapeSize, shapeSize);
+              break;
+            case 'triangle':
+              drawTriangle(ctx, x - shapeSize/2, y - shapeSize/2, shapeSize);
+              break;
+          }
+        }
+      }
+      return ctx;
+    }
+    
+    function generateGradientCirclesPattern(ctx, width, height, scale, base, alpha) {
+      // Create large gradient circles with transparency
+      const circles = [
+        { x: width * 0.2, y: height * 0.2, radius: Math.round(120 * scale), opacity: alpha * 0.3 },
+        { x: width * 0.8, y: height * 0.3, radius: Math.round(100 * scale), opacity: alpha * 0.25 },
+        { x: width * 0.3, y: height * 0.7, radius: Math.round(90 * scale), opacity: alpha * 0.2 },
+        { x: width * 0.7, y: height * 0.8, radius: Math.round(110 * scale), opacity: alpha * 0.35 }
+      ];
+      
+      circles.forEach(circle => {
+        const gradient = ctx.createRadialGradient(
+          circle.x, circle.y, 0,
+          circle.x, circle.y, circle.radius
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},${circle.opacity})`);
+        gradient.addColorStop(0.7, `rgba(${base.r},${base.g},${base.b},${circle.opacity * 0.5})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientBlobsPattern(ctx, width, height, scale, base, alpha) {
+      // Create large organic blob shapes with gradients
+      const blobs = [
+        { x: width * 0.15, y: height * 0.15, size: Math.round(150 * scale), opacity: alpha * 0.4 },
+        { x: width * 0.85, y: height * 0.25, size: Math.round(130 * scale), opacity: alpha * 0.3 },
+        { x: width * 0.25, y: height * 0.75, size: Math.round(140 * scale), opacity: alpha * 0.35 },
+        { x: width * 0.75, y: height * 0.85, size: Math.round(120 * scale), opacity: alpha * 0.25 }
+      ];
+      
+      blobs.forEach(blob => {
+        const gradient = ctx.createRadialGradient(
+          blob.x, blob.y, 0,
+          blob.x, blob.y, blob.size
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},${blob.opacity})`);
+        gradient.addColorStop(0.6, `rgba(${base.r},${base.g},${base.b},${blob.opacity * 0.3})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        
+        // Create organic blob shape
+        const points = 8;
+        for (let i = 0; i < points; i++) {
+          const angle = (i / points) * Math.PI * 2;
+          const radius = blob.size * (0.7 + Math.sin(angle * 3) * 0.3);
+          const x = blob.x + Math.cos(angle) * radius;
+          const y = blob.y + Math.sin(angle) * radius;
+          
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.quadraticCurveTo(blob.x, blob.y, x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientFeathersPattern(ctx, width, height, scale, base, alpha) {
+      // Create feather-like gradient shapes
+      const feathers = [
+        { x: width * 0.15, y: height * 0.2, length: Math.round(120 * scale), angle: -30, opacity: alpha * 0.4 },
+        { x: width * 0.85, y: height * 0.3, length: Math.round(100 * scale), angle: 45, opacity: alpha * 0.35 },
+        { x: width * 0.2, y: height * 0.8, length: Math.round(110 * scale), angle: 15, opacity: alpha * 0.3 },
+        { x: width * 0.8, y: height * 0.7, length: Math.round(90 * scale), angle: -45, opacity: alpha * 0.25 }
+      ];
+      
+      feathers.forEach(feather => {
+        const gradient = ctx.createLinearGradient(
+          feather.x, feather.y,
+          feather.x + Math.cos(feather.angle * Math.PI / 180) * feather.length,
+          feather.y + Math.sin(feather.angle * Math.PI / 180) * feather.length
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},${feather.opacity})`);
+        gradient.addColorStop(0.7, `rgba(${base.r},${base.g},${base.b},${feather.opacity * 0.3})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        
+        // Create feather shape
+        const endX = feather.x + Math.cos(feather.angle * Math.PI / 180) * feather.length;
+        const endY = feather.y + Math.sin(feather.angle * Math.PI / 180) * feather.length;
+        const midX = feather.x + Math.cos(feather.angle * Math.PI / 180) * feather.length * 0.5;
+        const midY = feather.y + Math.sin(feather.angle * Math.PI / 180) * feather.length * 0.5;
+        
+        ctx.moveTo(feather.x, feather.y);
+        ctx.quadraticCurveTo(midX + Math.sin(feather.angle * Math.PI / 180) * feather.length * 0.2, 
+                            midY - Math.cos(feather.angle * Math.PI / 180) * feather.length * 0.2, endX, endY);
+        ctx.quadraticCurveTo(midX - Math.sin(feather.angle * Math.PI / 180) * feather.length * 0.2, 
+                            midY + Math.cos(feather.angle * Math.PI / 180) * feather.length * 0.2, feather.x, feather.y);
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientRectanglesPattern(ctx, width, height, scale, base, alpha) {
+      // Create large vertical gradient rectangles
+      const rectangles = [
+        { x: width * 0.1, y: height * 0.1, w: Math.round(40 * scale), h: Math.round(200 * scale), opacity: alpha * 0.3 },
+        { x: width * 0.8, y: height * 0.2, w: Math.round(35 * scale), h: Math.round(180 * scale), opacity: alpha * 0.25 },
+        { x: width * 0.05, y: height * 0.3, w: Math.round(30 * scale), h: Math.round(150 * scale), opacity: alpha * 0.2 },
+        { x: width * 0.9, y: height * 0.1, w: Math.round(25 * scale), h: Math.round(160 * scale), opacity: alpha * 0.35 }
+      ];
+      
+      rectangles.forEach(rect => {
+        const gradient = ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.h);
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},${rect.opacity})`);
+        gradient.addColorStop(0.5, `rgba(${base.r},${base.g},${base.b},${rect.opacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientArrowsPattern(ctx, width, height, scale, base, alpha) {
+      // Create large arrow-like gradient shapes
+      const arrows = [
+        { x: width * 0.2, y: height * 0.2, size: Math.round(80 * scale), angle: 45, opacity: alpha * 0.4 },
+        { x: width * 0.8, y: height * 0.3, size: Math.round(70 * scale), angle: -30, opacity: alpha * 0.35 },
+        { x: width * 0.3, y: height * 0.8, size: Math.round(75 * scale), angle: 120, opacity: alpha * 0.3 },
+        { x: width * 0.7, y: height * 0.7, size: Math.round(65 * scale), angle: -60, opacity: alpha * 0.25 }
+      ];
+      
+      arrows.forEach(arrow => {
+        const gradient = ctx.createRadialGradient(
+          arrow.x, arrow.y, 0,
+          arrow.x, arrow.y, arrow.size
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},${arrow.opacity})`);
+        gradient.addColorStop(0.6, `rgba(${base.r},${base.g},${base.b},${arrow.opacity * 0.4})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.save();
+        ctx.translate(arrow.x, arrow.y);
+        ctx.rotate(arrow.angle * Math.PI / 180);
+        
+        // Create arrow shape
+        ctx.beginPath();
+        ctx.moveTo(0, -arrow.size * 0.5);
+        ctx.lineTo(arrow.size * 0.3, -arrow.size * 0.2);
+        ctx.lineTo(arrow.size * 0.1, -arrow.size * 0.2);
+        ctx.lineTo(arrow.size * 0.1, arrow.size * 0.2);
+        ctx.lineTo(arrow.size * 0.3, arrow.size * 0.2);
+        ctx.lineTo(0, arrow.size * 0.5);
+        ctx.lineTo(-arrow.size * 0.3, arrow.size * 0.2);
+        ctx.lineTo(-arrow.size * 0.1, arrow.size * 0.2);
+        ctx.lineTo(-arrow.size * 0.1, -arrow.size * 0.2);
+        ctx.lineTo(-arrow.size * 0.3, -arrow.size * 0.2);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.restore();
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientDiamondsPattern(ctx, width, height, scale, base, alpha) {
+      // Create large diamond-shaped gradient elements
+      const diamonds = [
+        { x: width * 0.2, y: height * 0.3, size: Math.round(100 * scale), opacity: alpha * 0.4 },
+        { x: width * 0.8, y: height * 0.2, size: Math.round(90 * scale), opacity: alpha * 0.35 },
+        { x: width * 0.3, y: height * 0.8, size: Math.round(85 * scale), opacity: alpha * 0.3 },
+        { x: width * 0.7, y: height * 0.7, size: Math.round(95 * scale), opacity: alpha * 0.25 }
+      ];
+      
+      diamonds.forEach(diamond => {
+        const gradient = ctx.createRadialGradient(
+          diamond.x, diamond.y, 0,
+          diamond.x, diamond.y, diamond.size
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},${diamond.opacity})`);
+        gradient.addColorStop(0.5, `rgba(${base.r},${base.g},${base.b},${diamond.opacity * 0.5})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        
+        // Create diamond shape
+        ctx.moveTo(diamond.x, diamond.y - diamond.size * 0.5);
+        ctx.lineTo(diamond.x + diamond.size * 0.5, diamond.y);
+        ctx.lineTo(diamond.x, diamond.y + diamond.size * 0.5);
+        ctx.lineTo(diamond.x - diamond.size * 0.5, diamond.y);
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientSwooshPattern(ctx, width, height, scale, base, alpha) {
+      // Create large swoosh-like gradient shapes
+      const swooshes = [
+        { 
+          startX: 0, startY: height * 0.3, 
+          endX: width * 0.7, endY: height * 0.1,
+          size: Math.round(80 * scale), opacity: alpha * 0.4
+        },
+        { 
+          startX: width * 0.3, startY: height, 
+          endX: width, endY: height * 0.7,
+          size: Math.round(70 * scale), opacity: alpha * 0.3
+        }
+      ];
+      
+      swooshes.forEach(swoosh => {
+        const gradient = ctx.createLinearGradient(
+          swoosh.startX, swoosh.startY, 
+          swoosh.endX, swoosh.endY
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},0)`);
+        gradient.addColorStop(0.3, `rgba(${base.r},${base.g},${base.b},${swoosh.opacity})`);
+        gradient.addColorStop(0.7, `rgba(${base.r},${base.g},${base.b},${swoosh.opacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        
+        // Create swoosh shape
+        const midX = (swoosh.startX + swoosh.endX) / 2;
+        const midY = (swoosh.startY + swoosh.endY) / 2;
+        
+        ctx.moveTo(swoosh.startX, swoosh.startY);
+        ctx.quadraticCurveTo(midX, midY, swoosh.endX, swoosh.endY);
+        ctx.quadraticCurveTo(midX, midY + swoosh.size, swoosh.startX, swoosh.startY);
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+    
+    function generateGradientRingsPattern(ctx, width, height, scale, base, alpha) {
+      // Create large gradient rings like the original but with better gradients
+      const centerX = Math.round(118 * scale) + Math.round(52 * scale);
+      const centerY = height / 2;
+      const rings = [
+        { radius: Math.round(80 * scale), opacity: alpha * 0.3 },
+        { radius: Math.round(140 * scale), opacity: alpha * 0.25 },
+        { radius: Math.round(200 * scale), opacity: alpha * 0.2 },
+        { radius: Math.round(260 * scale), opacity: alpha * 0.15 },
+        { radius: Math.round(320 * scale), opacity: alpha * 0.1 }
+      ];
+      
+      rings.forEach(ring => {
+        const gradient = ctx.createRadialGradient(
+          centerX, centerY, ring.radius * 0.7,
+          centerX, centerY, ring.radius
+        );
+        gradient.addColorStop(0, `rgba(${base.r},${base.g},${base.b},0)`);
+        gradient.addColorStop(0.5, `rgba(${base.r},${base.g},${base.b},${ring.opacity})`);
+        gradient.addColorStop(1, `rgba(${base.r},${base.g},${base.b},0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, ring.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      return ctx;
+    }
+
+    // Build a single-image signature (selected pattern + logo + text)
     async function buildFullSignatureImage({ name, title, phone, email, website, address = "", rights1 = "", rights2 = "", rights2Italic = false, rights2UseFg = true, logoSrc, fg, ringsOpacity = 1, ringsColor, size = "large" }) {
       // Size configurations - proportional scaling
       const sizeConfigs = {
@@ -718,22 +1558,17 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, width, height);
 
-      // Golden rings spanning left side
-      // Parse selected rings color
-      const base = parseColorToRgb(ringsColor || '#D4B982');
-      const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-      const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
-      const centerX = Math.round(118 * scale) + Math.round(52 * scale); // Move left to center logo in central ring
-      const centerY = height / 2;
-      for (let i = 0; i < radii.length; i++) {
-        ctx.beginPath();
-        // Make the top of the slider more intense using a gain factor
-        const gain = 0.6 + (ringsOpacity ** 1.1) * 1.6; // 0 -> 0.6x, 1 -> 2.2x (clamped below)
-        const a = Math.max(0, Math.min(1, baseAlphas[i] * gain));
-        ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${a})`;
-        ctx.arc(centerX, centerY, radii[i], 0, Math.PI * 2);
-        ctx.fill();
+      // Generate selected pattern
+      const selectedPattern = bgPattern.value || 'circles';
+      const patternCtx = generatePattern(selectedPattern, ringsColor, ringsOpacity, width, height, scale);
+      
+      // Draw the pattern onto the main canvas
+      if (patternCtx && patternCtx.canvas) {
+        ctx.drawImage(patternCtx.canvas, 0, 0);
       }
+
+      // Define centerY for logo positioning
+      const centerY = height / 2;
 
       // Logo only (no rectangle background)
       const imgBox = Math.round(104 * scale); const imgX = Math.round(118 * scale); const imgY = centerY - imgBox / 2;
@@ -750,11 +1585,11 @@
       ctx.fillStyle = primary;
       ctx.font = `700 ${Math.round(24 * scale)}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
       ctx.textBaseline = 'top';
-      ctx.fillText(name, textX, imgY + Math.round(6 * scale));
+      ctx.fillText(name || "Full Name", textX, imgY + Math.round(6 * scale));
 
       ctx.fillStyle = 'rgba(17,24,39,0.7)';
       ctx.font = `500 ${Math.round(18 * scale)}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
-      ctx.fillText(title, textX, imgY + Math.round(38 * scale));
+      ctx.fillText(title || "Job Title", textX, imgY + Math.round(38 * scale));
 
       ctx.fillStyle = 'rgba(17,24,39,0.9)';
       ctx.font = `400 ${Math.round(16 * scale)}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
@@ -779,23 +1614,23 @@
       if (phoneIcon) { ctx.drawImage(phoneIcon, cursorX, rowCenterY - iconSize/2, iconSize, iconSize); }
       cursorX += iconSize + gapAfterIcon;
       ctx.fillStyle = 'rgba(17,24,39,0.9)';
-      ctx.fillText(phone, cursorX, rowCenterY);
-      cursorX += ctx.measureText(phone).width + gapAfterText;
+      ctx.fillText(phone || "Phone", cursorX, rowCenterY);
+      cursorX += ctx.measureText(phone || "Phone").width + gapAfterText;
       ctx.fillStyle = sepColor; ctx.fillText(sep, cursorX, rowCenterY); cursorX += 14;
 
       // email
       if (emailIcon) { ctx.drawImage(emailIcon, cursorX, rowCenterY - iconSize/2, iconSize, iconSize); }
       cursorX += iconSize + gapAfterIcon;
       ctx.fillStyle = 'rgba(17,24,39,0.9)';
-      ctx.fillText(email, cursorX, rowCenterY);
-      cursorX += ctx.measureText(email).width + gapAfterText;
+      ctx.fillText(email || "Email", cursorX, rowCenterY);
+      cursorX += ctx.measureText(email || "Email").width + gapAfterText;
       ctx.fillStyle = sepColor; ctx.fillText(sep, cursorX, rowCenterY); cursorX += 14;
 
       // website
       if (globeIcon) { ctx.drawImage(globeIcon, cursorX, rowCenterY - iconSize/2, iconSize, iconSize); }
       cursorX += iconSize + gapAfterIcon;
       ctx.fillStyle = 'rgba(17,24,39,0.9)';
-      ctx.fillText(website, cursorX, rowCenterY);
+      ctx.fillText(website || "Website", cursorX, rowCenterY);
 
       // Optional address and rights lines under contact row
       let extraY = rowCenterY + Math.round(26 * scale);
@@ -880,12 +1715,32 @@
     }
 
     async function copySignature(size = 'large') {
+      // Validate required fields
+      const requiredFields = [
+        { id: 'fullName', name: 'Full Name' },
+        { id: 'jobTitle', name: 'Job Title' },
+        { id: 'email', name: 'Email' },
+        { id: 'phone', name: 'Phone' },
+        { id: 'website', name: 'Website' }
+      ];
+      
+      const missingFields = requiredFields.filter(field => {
+        const element = document.getElementById(field.id);
+        return !element.value.trim();
+      });
+      
+      if (missingFields.length > 0) {
+        const fieldNames = missingFields.map(f => f.name).join(', ');
+        showToast(`Please fill in the required fields: ${fieldNames}`, 'error');
+        return;
+      }
+      
       // Copy the specific size signature
-      const name = document.getElementById("fullName").value || "John Doe";
-      const title = document.getElementById("jobTitle").value || "Product Manager";
-      const phone = document.getElementById("phone").value || "+971 50 123 4567";
-      const email = document.getElementById("email").value || "name@company.com";
-      const website = document.getElementById("website").value || "www.company.com";
+      const name = document.getElementById("fullName").value;
+      const title = document.getElementById("jobTitle").value;
+      const phone = document.getElementById("phone").value;
+      const email = document.getElementById("email").value;
+      const website = document.getElementById("website").value;
       const opacity = bgOpacity.value / 100;
       const address = document.getElementById("address").value || "";
       const rights1 = document.getElementById("rights1").value || "";
