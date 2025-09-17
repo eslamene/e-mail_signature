@@ -1,4 +1,26 @@
 {
+  "common": {
+    "jobTitles": [
+      "Co-Founder & CEO", "Co-Founder & CTO", "Co-Founder & COO", "CEO", "CTO", "COO", "CFO",
+      "VP Engineering", "VP Product", "VP Sales", "VP Marketing",
+      "Head of Product", "Head of Engineering", "Head of Sales", "Head of Marketing", "Head of Operations",
+      "Product Manager", "Senior Product Manager", "Lead Product Manager", "Technical Product Manager",
+      "Senior Software Engineer", "Lead Software Engineer", "Principal Software Engineer", "Software Engineer",
+      "Frontend Developer", "Backend Developer", "Full Stack Developer", "DevOps Engineer", "QA Engineer",
+      "UI/UX Designer", "Product Designer",
+      "Sales Manager", "Senior Sales Manager", "Sales Director", "Business Development Manager",
+      "Marketing Manager", "Digital Marketing Manager", "Content Marketing Manager",
+      "Account Manager", "Senior Account Manager", "Customer Success Manager",
+      "Operations Manager", "Project Manager", "Technical Project Manager",
+      "Data Analyst", "Business Analyst", "Financial Analyst",
+      "HR Manager", "Legal Counsel", "Compliance Manager", "Security Engineer",
+      "Solutions Architect", "Technical Writer", "Community Manager", "Partnership Manager",
+      "Growth Manager", "Product Marketing Manager", "Brand Manager", "Event Manager",
+      "Research Analyst", "Investment Analyst", "Risk Manager", "Treasury Manager",
+      "Fintech Specialist", "Blockchain Developer", "AI/ML Engineer", "Data Scientist",
+      "Consultant", "Advisor", "Board Member"
+    ]
+  },
   "templates": [
     {
       "key": "Flagshipfintech",
