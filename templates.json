@@ -28,8 +28,8 @@
       "logos": ["logos/flagshipfintech.png", "logos/flagshipfintech.svg"],
       "fields": {
         "fullName": "John Doe",
-        "jobTitle": "Co-Founder & CTO",
-        "phone": "+20100 123 4567",
+        "jobTitle": "",
+        "phone": "",
         "website": "www.flagshipfintech.com",
         "address": "8 No. 5, Al Golf, Nasr City, Cairo Governorate, Egypt",
         "rights1": "© Flagship Fintech. All rights reserved.",
@@ -43,8 +43,8 @@
       "logos": ["logos/cashfloweg.png", "logos/cashfloweg.svg"],
       "fields": {
         "fullName": "John Doe",
-        "jobTitle": "Product Manager",
-        "phone": "+20 100 000 0000",
+        "jobTitle": "",
+        "phone": "",
         "website": "www.cashfloweg.com",
         "address": "10 Abbas Helmy St, Nasr City, Cairo, Egypt",
         "rights1": "© Cashflow EG. All rights reserved.",
@@ -58,8 +58,8 @@
       "logos": ["logos/79-pay.png", "logos/79-pay.svg"],
       "fields": {
         "fullName": "John Doe",
-        "jobTitle": "Product Manager",
-        "phone": "+971 50 123 4567",
+        "jobTitle": "",
+        "phone": "",
         "website": "www.79-pay.com",
         "address": "",
         "rights1": "© 79-Pay. All rights reserved.",
