@@ -1,0 +1,104 @@
+body { 
+  background: #f9fafb; 
+  font-family: 'Inter', sans-serif; 
+}
+
+/* Improved inputs (plain CSS to avoid @apply in inline styles) */
+.input { 
+  border-radius: 0.5rem; 
+  border: 1px solid #d1d5db; 
+  background: #fff; 
+  padding: 0.5rem 0.75rem; 
+  color: #111827; 
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04); 
+  outline: none; 
+  transition: border-color .15s, box-shadow .15s; 
+}
+
+.input::placeholder { 
+  color: #9ca3af; 
+}
+
+.input:hover { 
+  border-color: #9ca3af; 
+}
+
+.input:focus { 
+  border-color: #3b82f6; 
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.15); 
+}
+
+.input[disabled] { 
+  background: #f3f4f6; 
+  color: #9ca3af; 
+  cursor: not-allowed; 
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid #e5e7eb;
+  transition: transform 0.15s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  border-color: #000;
+}
+
+#signature-preview {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+  background: white;
+  padding: 12px;
+}
+
+.rings-bg {
+  position: relative;
+  overflow: hidden;
+  /* background will be set inline via JS to ensure it copies into email clients */
+  background-color: #ffffff;
+}
+
+/* Custom slider styling */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
