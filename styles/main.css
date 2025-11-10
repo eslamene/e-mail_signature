@@ -102,3 +102,43 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Step indicator styling */
+.step-button {
+  position: relative;
+}
+
+.step-button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.step-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* Step indicator responsive */
+@media (max-width: 768px) {
+  #stepIndicator {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  #stepIndicator > div {
+    flex: 1 1 auto;
+    min-width: 70px;
+  }
+  
+  #stepIndicator .step-button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  #stepIndicator .step-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  #stepIndicator span {
+    font-size: 0.65rem;
+  }
+}
+

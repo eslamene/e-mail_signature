@@ -222,14 +222,18 @@ async function copySignature(size = 'large') {
   const requiredFields = [
     { id: 'fullName', name: 'Full Name' },
     { id: 'jobTitle', name: 'Job Title' },
-    { id: 'email', name: 'Email' },
+    { id: 'email', name: 'Email', isEmail: true },
     { id: 'phone', name: 'Phone' },
     { id: 'website', name: 'Website' }
   ];
   
   const missingFields = requiredFields.filter(field => {
+    if (field.isEmail) {
+      const emailValue = window.getEmailValue ? window.getEmailValue() : '';
+      return !emailValue || !emailValue.trim();
+    }
     const element = document.getElementById(field.id);
-    return !element.value.trim();
+    return !element || !element.value.trim();
   });
   
   if (missingFields.length > 0) {
@@ -241,7 +245,7 @@ async function copySignature(size = 'large') {
   const name = document.getElementById("fullName").value;
   const title = document.getElementById("jobTitle").value;
   const phone = document.getElementById("phone").value;
-  const email = document.getElementById("email").value;
+  const email = window.getEmailValue ? window.getEmailValue() : document.getElementById("email").value;
   const website = document.getElementById("website").value;
   const opacity = document.getElementById("bgOpacity").value / 100;
   const address = document.getElementById("address").value || "";
@@ -269,6 +273,10 @@ async function copySignature(size = 'large') {
   
   navigator.clipboard.write(data).then(() => {
     showToast(`Signature (${size}) copied! Paste into Gmail/Outlook.`, "success");
+    // Mark signature as copied to enable Complete button
+    if (window.markSignatureCopied) {
+      window.markSignatureCopied();
+    }
   }).catch(err => {
     console.error(err);
     showToast("Copy failed. Try Chrome/Edge.", "error");

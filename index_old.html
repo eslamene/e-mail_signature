@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Signature Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="p-6">
+  <div class="max-w-5xl mx-auto space-y-6">
+    <h1 class="text-2xl font-bold text-gray-800">✨ Email Signature Generator</h1>
+
+    <!-- Form -->
+    <div class="bg-white rounded-xl shadow p-6 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Template</label>
+          <select id="templateSelect" class="mt-1 w-full input">
+            <option value="">Custom</option>
+            <option value="Flagshipfintech">Flagshipfintech</option>
+            <option value="cashfloweg">cashfloweg</option>
+            <option value="79-pay">79-pay</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">Select a preset to auto-fill logo and company details.</p>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Custom Logo</label>
+          <div class="relative">
+            <input id="logoUpload" type="file" class="hidden" accept="image/*,.svg">
+            <div id="logoUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer group">
+              <div class="flex flex-col items-center">
+                <svg class="w-12 h-12 text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <p class="text-sm text-gray-600 group-hover:text-blue-600 transition-colors duration-200">
+                  <span class="font-medium">Click to upload</span> or drag and drop
+                </p>
+                <p class="text-xs text-gray-500 mt-1">PNG, JPG, JPEG, SVG (Max 10MB)</p>
+              </div>
+            </div>
+            <div id="logoPreview" class="hidden mt-3">
+              <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                <div class="flex items-center">
+                  <img id="logoPreviewImg" class="w-8 h-8 object-contain rounded" alt="Logo preview">
+                  <div class="ml-3">
+                    <p id="logoFileName" class="text-sm font-medium text-gray-900"></p>
+                    <p class="text-xs text-gray-500">Ready to use</p>
+                  </div>
+                </div>
+                <button id="removeLogo" class="text-red-500 hover:text-red-700 transition-colors duration-200">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+<div>        <label class="block text-sm font-medium text-gray-700 mb-2">Background Pattern</label>
+  <select id="bgPattern" class="mt-1 w-full input">
+    <option value="circles">Concentric Circles</option>
+    <option value="concentric-squares">Concentric Squares</option>
+    <option value="concentric-triangles">Concentric Triangles</option>
+    <option value="concentric-hexagons">Concentric Hexagons</option>
+    <option value="concentric-diamonds">Concentric Diamonds</option>
+    <option value="gradient-circles">Gradient Circles</option>
+    <option value="gradient-blobs">Gradient Blobs</option>
+    <option value="gradient-feathers">Gradient Feathers</option>
+    <option value="gradient-rectangles">Gradient Rectangles</option>
+    <option value="gradient-arrows">Gradient Arrows</option>
+    <option value="gradient-diamonds">Gradient Diamonds</option>
+    <option value="gradient-swoosh">Gradient Swoosh</option>
+    <option value="gradient-rings">Gradient Rings</option>
+  </select></div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-500">*</span></label>
+          <input id="fullName" type="text" class="mt-1 w-full input" placeholder="Enter your full name" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Job Title <span class="text-red-500">*</span></label>
+          <div class="relative mt-1">
+            <input id="jobTitle" type="text" class="w-full input" placeholder="Select or type your job title" autocomplete="off" required>
+            <div id="jobTitleDropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto">
+              <!-- Options will be populated dynamically -->
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Website <span class="text-red-500">*</span></label>
+          <input id="website" type="text" class="mt-1 w-full input" placeholder="Enter your website URL" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+          <input id="email" type="email" class="mt-1 w-full input" placeholder="Enter your email address" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Phone <span class="text-red-500">*</span></label>
+          <input id="phone" type="text" class="mt-1 w-full input" placeholder="Enter your phone number" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Address (optional)</label>
+          <input id="address" type="text" class="mt-1 w-full input" placeholder="123 Main St, City, Country">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Footer line 1 (optional)</label>
+          <input id="rights1" type="text" class="mt-1 w-full input" placeholder="© Company. All rights reserved." list="footerLine1">
+          <datalist id="footerLine1">
+            <option value="© Company. All rights reserved.">© Company. All rights reserved.</option>
+            <option value="This email and any attachments are confidential.">This email and any attachments are confidential.</option>
+            <option value="If you received this email in error, please delete it.">If you received this email in error, please delete it.</option>
+            <option value="Registered in [Country]. Reg No: 123456.">Registered in [Country]. Reg No: 123456.</option>
+            <option value="Building trust beyond payments.">Building trust beyond payments.</option>
+          </datalist>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Footer line 2 (optional)</label>
+          <input id="rights2" type="text" class="mt-1 w-full input" placeholder="This email is confidential." list="footerLine2">
+          <div class="mt-2 flex items-center gap-6 text-sm text-gray-700">
+            <label class="inline-flex items-center cursor-pointer group">
+              <div class="relative">
+                <input id="rights2Italic" type="checkbox" class="sr-only peer">
+                <div class="w-5 h-5 bg-white peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-opacity-50 rounded-md peer-checked:bg-blue-600 peer-checked:border-blue-600 border-2 border-gray-300 transition-all duration-200 group-hover:border-blue-400"></div>
+                <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <span class="ml-3 font-medium group-hover:text-blue-600 transition-colors duration-200">Italic</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer group">
+              <div class="relative">
+                <input id="rights2UseFg" type="checkbox" checked class="sr-only peer">
+                <div class="w-5 h-5 bg-white peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-opacity-50 rounded-md peer-checked:bg-blue-600 peer-checked:border-blue-600 border-2 border-gray-300 transition-all duration-200 group-hover:border-blue-400"></div>
+                <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <span class="ml-3 font-medium group-hover:text-blue-600 transition-colors duration-200">Use foreground color</span>
+            </label>
+          </div>
+          <datalist id="footerLine2">
+            <option value="Please consider the environment before printing this email.">Please consider the environment before printing this email.</option>
+            <option value="Company address: 123 Main St, City, Country.">Company address: 123 Main St, City, Country.</option>
+            <option value="VAT No: 000000000">VAT No: 000000000</option>
+            <option value="Support: support@company.com | +971 50 123 4567">Support: support@company.com | +971 50 123 4567</option>
+            <option value="Follow us: www.company.com">Follow us: www.company.com</option>
+          </datalist>
+        </div>
+      </div>
+
+      <!-- Colors -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Pick Foreground Color</label>
+        <div id="colorPalette" class="flex gap-2 flex-wrap mb-3"></div>
+
+        <label class="block text-sm font-medium text-gray-700 mb-2 mt-3">Pick Background Color</label>
+        <div id="bgColorPalette" class="flex gap-2 flex-wrap"></div>
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-sm font-medium text-gray-700">Adjust pattern transparency</label>
+            <span id="opacityValue" class="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">50%</span>
+          </div>
+          <div class="relative">
+            <div class="w-full h-2 bg-gray-200 rounded-lg relative">
+              <div id="sliderProgress" class="absolute top-0 left-0 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg pointer-events-none" style="width: 50%"></div>
+            </div>
+            <input id="bgOpacity" type="range" min="0" max="100" value="50" class="absolute top-0 left-0 w-full h-2 bg-transparent appearance-none cursor-pointer slider">
+          </div>
+          <div class="flex justify-between text-xs text-gray-400 mt-1">
+            <span>0%</span>
+            <span>100%</span>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-sm font-medium text-gray-700">Vertical position adjustment</label>
+            <span id="verticalPositionValue" class="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">30%</span>
+          </div>
+          <div class="relative">
+            <div class="w-full h-2 bg-gray-200 rounded-lg relative">
+              <div id="verticalPositionProgress" class="absolute top-0 left-0 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg pointer-events-none" style="width: 33.33%"></div>
+            </div>
+            <input id="verticalPosition" type="range" min="10" max="70" value="30" class="absolute top-0 left-0 w-full h-2 bg-transparent appearance-none cursor-pointer slider">
+          </div>
+          <div class="flex justify-between text-xs text-gray-400 mt-1">
+            <span>10% (from bottom)</span>
+            <span>70% (from bottom)</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Controls vertical position from bottom. Lower = more bottom space, Higher = more top space.</p>
+        </div>
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-sm font-medium text-gray-700">Horizontal position adjustment</label>
+            <span id="horizontalPositionValue" class="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">10%</span>
+          </div>
+          <div class="relative">
+            <div class="w-full h-2 bg-gray-200 rounded-lg relative">
+              <div id="horizontalPositionProgress" class="absolute top-0 left-0 h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg pointer-events-none" style="width: 10%"></div>
+            </div>
+            <input id="horizontalPosition" type="range" min="0" max="100" value="10" class="absolute top-0 left-0 w-full h-2 bg-transparent appearance-none cursor-pointer slider">
+          </div>
+          <div class="flex justify-between text-xs text-gray-400 mt-1">
+            <span>0% (from left)</span>
+            <span>100% (from left)</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Controls horizontal position from left. Lower = move left, Higher = move right.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signature Preview -->
+    <div>
+      <h2 class="text-lg font-semibold text-gray-700 mb-2">Preview</h2>
+      <div id="signature-preview" class="rings-bg relative">
+        <div id="signatureContent" class="flex items-center gap-4 relative z-10"></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+      <div class="flex gap-3 justify-center">
+        <button onclick="copySignature('small')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg shadow-md hover:from-emerald-600 hover:to-teal-700 text-sm font-medium transform hover:scale-105 transition-all duration-200">Copy Small</button>
+        <button onclick="copySignature('medium')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg shadow-md hover:from-orange-600 hover:to-red-600 text-sm font-medium transform hover:scale-105 transition-all duration-200">Copy Medium</button>
+        <button onclick="copySignature('large')" class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 font-medium transform hover:scale-105 transition-all duration-200">Copy Large</button>
+      </div>
+
+    <!-- Footer -->
+    <div class="pt-4 text-center text-xs text-gray-500">
+      Designed by and copyrights © Flagship Fintech
+    </div>
+  </div>
+
+  <!-- Color Thief for extracting colors -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+  
+  <!-- Application JavaScript (load in order) -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/patterns.js"></script>
+  <script src="js/signature.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

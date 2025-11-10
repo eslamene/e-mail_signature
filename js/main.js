@@ -10,7 +10,7 @@ async function updateSignature() {
   const name = document.getElementById("fullName")?.value || "";
   const title = document.getElementById("jobTitle")?.value || "";
   const phone = document.getElementById("phone")?.value || "";
-  const email = document.getElementById("email")?.value || "";
+  const email = window.getEmailValue ? window.getEmailValue() : (document.getElementById("email")?.value || "");
   const website = document.getElementById("website")?.value || "";
   const address = document.getElementById("address")?.value || "";
   const rights1 = document.getElementById("rights1")?.value || "";
@@ -44,6 +44,12 @@ async function updateSignature() {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize steps wizard
+  if (window.initSteps) window.initSteps();
+  
+  // Initialize email domain
+  if (window.initEmailDomain) window.initEmailDomain();
+  
   // Initialize palettes
   renderPalette();
   updateSliderVisual();

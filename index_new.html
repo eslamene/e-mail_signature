@@ -11,16 +11,8 @@
     <h1 class="text-2xl font-bold text-gray-800">✨ Email Signature Generator</h1>
 
     <!-- Step Indicator -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div id="stepIndicator" class="flex items-center justify-between"></div>
-    </div>
-
-    <!-- Live Preview (Always Visible) -->
     <div class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Live Preview</h2>
-      <div id="signature-preview" class="rings-bg relative">
-        <div id="signatureContent" class="flex items-center gap-4 relative z-10"></div>
-      </div>
+      <div id="stepIndicator" class="flex items-center justify-between"></div>
     </div>
 
     <!-- Form with Steps -->
@@ -104,34 +96,9 @@
       <div id="step3" class="step-content hidden">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Step 3: Contact Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="relative">
+          <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-            <div class="relative flex items-center">
-              <input id="emailUsername" type="text" class="w-full input pr-24" placeholder="Enter username only" required autocomplete="username">
-              <div class="absolute right-0 flex items-center pr-2 pointer-events-none">
-                <span id="emailDomain" class="text-gray-400 text-sm mr-2">@flagshipfintech.com</span>
-                <button id="emailDomainToggle" type="button" class="pointer-events-auto w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-100 transition-colors" title="Change domain">
-                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <input id="email" type="hidden" required>
-            <div id="emailDomainDropdown" class="hidden absolute z-50 w-64 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto" style="top: 100%; right: 0; margin-top: 4px;">
-              <div class="p-2">
-                <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Select Domain</div>
-                <div id="emailDomainOptions" class="space-y-1">
-                  <!-- Options will be populated dynamically -->
-                </div>
-                <div class="border-t border-gray-200 mt-2 pt-2">
-                  <button id="emailDomainCustom" type="button" class="w-full text-left px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md">
-                    + Custom Domain
-                  </button>
-                </div>
-              </div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1">Enter username only (no @ or domain). Domain is selected separately.</p>
+            <input id="email" type="email" class="w-full input" placeholder="Enter your email address" required>
           </div>
           <div>
             <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone <span class="text-red-500">*</span></label>
@@ -283,13 +250,15 @@
         </div>
       </div>
 
-      <!-- Step 6: Copy Actions -->
+      <!-- Step 6: Preview -->
       <div id="step6" class="step-content hidden">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Step 6: Copy Your Signature</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Step 6: Preview & Copy</h2>
         <div class="space-y-6">
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p class="text-sm text-blue-800 mb-2"><strong>Your signature is ready!</strong></p>
-            <p class="text-xs text-blue-700">Use the buttons below to copy your signature in different sizes. Then paste it into your email client (Gmail, Outlook, etc.).</p>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Signature Preview</h3>
+            <div id="signature-preview" class="rings-bg relative">
+              <div id="signatureContent" class="flex items-center gap-4 relative z-10"></div>
+            </div>
           </div>
           <div class="flex gap-3 justify-center">
             <button onclick="copySignature('small')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg shadow-md hover:from-emerald-600 hover:to-teal-700 text-sm font-medium transform hover:scale-105 transition-all duration-200">Copy Small</button>
@@ -326,7 +295,6 @@
   <script src="js/patterns.js"></script>
   <script src="js/signature.js"></script>
   <script src="js/templates.js"></script>
-  <script src="js/email.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/steps.js"></script>
   <script src="js/main.js"></script>

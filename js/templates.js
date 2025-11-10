@@ -41,9 +41,15 @@ async function applyTemplate(key) {
     }
   });
   
-  // Email field is kept empty - user must enter their own email
-  const emailEl = document.getElementById("email");
-  if (emailEl) emailEl.value = "";
+  // Set email domain from template
+  // Priority: 1) emailDomain from templates.json, 2) form from template key
+  if (window.setEmailFromTemplate) {
+    // Always use emailDomain from templates.json if it exists
+    const domain = t && t.emailDomain ? t.emailDomain : null;
+    // Only use template key as fallback if emailDomain is not provided
+    const fallbackKey = domain ? null : key;
+    window.setEmailFromTemplate(domain, fallbackKey);
+  }
   
   // Apply default pattern if specified
   if (t && t.defaultPattern) {
@@ -125,6 +131,11 @@ function loadTemplates() {
         if (window.setupJobTitleAutocomplete) {
           window.setupJobTitleAutocomplete();
         }
+      }
+      
+      // Refresh email domains after templates load
+      if (window.refreshEmailDomains) {
+        window.refreshEmailDomains();
       }
     }).catch(() => {});
 }
