@@ -218,7 +218,8 @@ async function buildFullSignatureImage({
   return { src: canvas.toDataURL('image/png'), width, height };
 }
 
-async function copySignature(size = 'large') {
+// Download the final signature image as PNG
+async function downloadSignature(size = 'large') {
   const requiredFields = [
     { id: 'fullName', name: 'Full Name' },
     { id: 'jobTitle', name: 'Job Title' },
@@ -257,7 +258,7 @@ async function copySignature(size = 'large') {
   const horizontalPositionVal = parseInt(document.getElementById("horizontalPosition").value);
   const patternType = document.getElementById("bgPattern").value || 'circles';
   
-  const fullImage = await buildFullSignatureImage({ 
+  const options = { 
     name, title, phone, email, website, address, rights1, rights2, 
     rights2Italic, rights2UseFg, logoSrc: window.logoBase64, 
     fg: window.selectedColor, ringsOpacity: opacity, 
@@ -265,24 +266,20 @@ async function copySignature(size = 'large') {
     verticalPositionPercent: verticalPositionVal,
     horizontalPositionPercent: horizontalPositionVal,
     patternType 
-  });
+  };
   
-  const html = `<img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}" />`;
-  const blob = new Blob([html], { type: "text/html" });
-  const data = [new ClipboardItem({ "text/html": blob })];
+  const fullImage = await buildFullSignatureImage(options);
   
-  navigator.clipboard.write(data).then(() => {
-    showToast(`Signature (${size}) copied! Paste into Gmail/Outlook.`, "success");
-    // Mark signature as copied to enable Complete button
-    if (window.markSignatureCopied) {
-      window.markSignatureCopied();
-    }
-  }).catch(err => {
-    console.error(err);
-    showToast("Copy failed. Try Chrome/Edge.", "error");
-  });
+  const link = document.createElement('a');
+  link.href = fullImage.src;
+  link.download = `signature-${size}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  showToast(`Signature (${size}) downloaded as PNG.`, "success");
 }
 
 // Export to window for onclick handlers
-window.copySignature = copySignature;
+window.downloadSignature = downloadSignature;
 

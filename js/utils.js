@@ -87,6 +87,17 @@ function rasterizeSvgToPng(svgDataUrl, width, height) {
   });
 }
 
+// Debounce helper to limit how often heavy operations (like canvas rendering) run
+function debounce(fn, delay) {
+  let timeoutId;
+  return function debounced(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+}
+
 // Lightweight toast notification
 function showToast(message, type = "success") {
   const isError = type === "error";

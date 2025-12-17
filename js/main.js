@@ -6,6 +6,9 @@ window.selectedBgColor = CONFIG.defaultBgColor;
 window.logoBase64 = "";
 window.logoColors = new Array(CONFIG.logoColorCount).fill(null);
 
+// Debounced version of updateSignature for performance-sensitive interactions (sliders, fast typing)
+const updateSignatureDebounced = debounce(updateSignature, 120);
+
 async function updateSignature() {
   const name = document.getElementById("fullName")?.value || "";
   const title = document.getElementById("jobTitle")?.value || "";
@@ -58,31 +61,33 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Set up input listeners
   document.querySelectorAll("input").forEach(el => {
-    el.addEventListener("input", updateSignature);
+    // Range sliders and file inputs have dedicated handlers below
+    if (el.type === "range" || el.type === "file") return;
+    el.addEventListener("input", updateSignatureDebounced);
   });
   
   // Slider listeners
   const bgOpacity = document.getElementById("bgOpacity");
   if (bgOpacity) {
     bgOpacity.addEventListener("input", () => {
-      updateSignature();
       updateSliderVisual();
+      updateSignatureDebounced();
     });
   }
   
   const verticalPosition = document.getElementById("verticalPosition");
   if (verticalPosition) {
     verticalPosition.addEventListener("input", () => {
-      updateSignature();
       updateVerticalPositionVisual();
+      updateSignatureDebounced();
     });
   }
   
   const horizontalPosition = document.getElementById("horizontalPosition");
   if (horizontalPosition) {
     horizontalPosition.addEventListener("input", () => {
-      updateSignature();
       updateHorizontalPositionVisual();
+      updateSignatureDebounced();
     });
   }
   
