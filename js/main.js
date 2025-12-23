@@ -21,28 +21,34 @@ async function updateSignature() {
   const opacity = document.getElementById("bgOpacity")?.value / 100 || 0.5;
   const rights2Italic = document.getElementById("rights2Italic")?.checked || false;
   const rights2UseFg = document.getElementById("rights2UseFg")?.checked || true;
-  const verticalPositionVal = parseInt(document.getElementById("verticalPosition")?.value || 30);
+  const verticalPositionVal = parseInt(document.getElementById("verticalPosition")?.value || 60);
   const horizontalPositionVal = parseInt(document.getElementById("horizontalPosition")?.value || 10);
   const patternType = document.getElementById("bgPattern")?.value || 'circles';
   const signatureContent = document.getElementById("signatureContent");
   
   if (!signatureContent) return;
 
-  const fullImage = await buildFullSignatureImage({ 
-    name, title, phone, email, website, address, rights1, rights2, 
-    rights2Italic, rights2UseFg, logoSrc: window.logoBase64, 
-    fg: window.selectedColor, ringsOpacity: opacity, 
-    ringsColor: window.selectedBgColor, 
-    verticalPositionPercent: verticalPositionVal,
-    horizontalPositionPercent: horizontalPositionVal,
-    patternType 
-  });
+  try {
+    const fullImage = await buildFullSignatureImage({ 
+      name, title, phone, email, website, address, rights1, rights2, 
+      rights2Italic, rights2UseFg, logoSrc: window.logoBase64, 
+      fg: window.selectedColor, ringsOpacity: opacity, 
+      ringsColor: window.selectedBgColor, 
+      verticalPositionPercent: verticalPositionVal,
+      horizontalPositionPercent: horizontalPositionVal,
+      patternType 
+    });
 
-  signatureContent.innerHTML = `
-    <img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}" style="display:block; width:${fullImage.width}px; height:auto;" />`;
+    signatureContent.innerHTML = `
+      <img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}" style="display:block; width:${fullImage.width}px; height:auto;" />`;
 
-  const preview = document.getElementById("signature-preview");
-  if (preview) preview.style.background = "#ffffff";
+    const preview = document.getElementById("signature-preview");
+    if (preview) preview.style.background = "#ffffff";
+  } catch (err) {
+    console.error("Failed to render signature preview", err);
+    signatureContent.innerHTML = '<div class="text-sm text-red-600">Preview failed to render.</div>';
+    showToast('Preview failed to render. Please reselect the template or adjust inputs.', 'error');
+  }
 }
 
 // Initialize on DOM ready

@@ -98,23 +98,6 @@ function setupEmailDomainListeners() {
         }
       }
       
-      // Remove any domain-like patterns (e.g., if user pasted full email)
-      // Check for common TLD patterns (2-4 letter extensions after a dot)
-      const domainPattern = /\.[a-z]{2,4}$/i;
-      if (domainPattern.test(value) && value.includes('.')) {
-        // Extract username before domain
-        const parts = value.split('.');
-        if (parts.length > 1) {
-          // Likely a domain, extract just the first part
-          value = parts[0].split('@')[0];
-          e.target.value = value;
-          
-          if (window.showToast) {
-            window.showToast('Domain is selected separately. Only username entered.', 'error');
-          }
-        }
-      }
-      
       updateEmailField();
       if (window.updateSignature) window.updateSignature();
     });
@@ -128,12 +111,6 @@ function setupEmailDomainListeners() {
       let username = pastedText;
       if (pastedText.includes('@')) {
         username = pastedText.split('@')[0];
-      }
-      
-      // Remove any domain-like patterns (TLD patterns)
-      const domainPattern = /\.[a-z]{2,4}$/i;
-      if (domainPattern.test(username) && username.includes('.')) {
-        username = username.split('.')[0];
       }
       
       // Clean username (remove invalid characters)

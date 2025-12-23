@@ -5,9 +5,10 @@ const CONFIG = {
   defaultBgColor: "#D4B982", // default gold base
   logoColorCount: 6,
   sizeConfigs: {
-    small: { scale: 0.5 },   // 50% of large
-    medium: { scale: 0.75 }, // 75% of large  
-    large: { scale: 1.0 }    // 100% (current)
+    // Note: actual scale is set in buildFullSignatureImage; these are fallback/display only.
+    small: { scale: 1.0 },
+    medium: { scale: 1.5 },
+    large: { scale: 2.0 }
   }
 };
 

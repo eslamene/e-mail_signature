@@ -1,5 +1,5 @@
 // Pattern generation functions
-function generatePattern(patternType, color, opacity, width, height, scale) {
+function generatePattern(patternType, color, opacity, width, height, scale, centerXOverride, centerYOverride, patternScale = 0.7) {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -14,15 +14,15 @@ function generatePattern(patternType, color, opacity, width, height, scale) {
   
   switch(patternType) {
     case 'circles':
-      return generateCirclesPattern(ctx, width, height, scale, base, alpha);
+      return generateCirclesPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
     case 'concentric-squares':
-      return generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha);
+      return generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
     case 'concentric-triangles':
-      return generateConcentricTrianglesPattern(ctx, width, height, scale, base, alpha);
+      return generateConcentricTrianglesPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
     case 'concentric-hexagons':
-      return generateConcentricHexagonsPattern(ctx, width, height, scale, base, alpha);
+      return generateConcentricHexagonsPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
     case 'concentric-diamonds':
-      return generateConcentricDiamondsPattern(ctx, width, height, scale, base, alpha);
+      return generateConcentricDiamondsPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
     case 'gradient-circles':
       return generateGradientCirclesPattern(ctx, width, height, scale, base, alpha);
     case 'gradient-blobs':
@@ -38,17 +38,17 @@ function generatePattern(patternType, color, opacity, width, height, scale) {
     case 'gradient-swoosh':
       return generateGradientSwooshPattern(ctx, width, height, scale, base, alpha);
     case 'gradient-rings':
-      return generateGradientRingsPattern(ctx, width, height, scale, base, alpha);
+      return generateGradientRingsPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
     default:
-      return generateCirclesPattern(ctx, width, height, scale, base, alpha);
+      return generateCirclesPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale);
   }
 }
 
-function generateCirclesPattern(ctx, width, height, scale, base, alpha) {
-  const centerX = Math.round(50 * scale) + Math.round(52 * scale);
-  const centerY = height / 2;
+function generateCirclesPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale) {
+  const centerX = centerXOverride !== undefined ? centerXOverride : Math.round(50 * scale) + Math.round(52 * scale);
+  const centerY = centerYOverride !== undefined ? centerYOverride : height / 2;
   const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale * patternScale));
   
   for (let i = 0; i < radii.length; i++) {
     ctx.beginPath();
@@ -61,11 +61,11 @@ function generateCirclesPattern(ctx, width, height, scale, base, alpha) {
   return ctx;
 }
 
-function generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha) {
-  const centerX = Math.round(50 * scale) + Math.round(52 * scale);
-  const centerY = height / 2;
+function generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale) {
+  const centerX = centerXOverride !== undefined ? centerXOverride : Math.round(50 * scale) + Math.round(52 * scale);
+  const centerY = centerYOverride !== undefined ? centerYOverride : height / 2;
   const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale * patternScale));
   
   for (let i = 0; i < radii.length; i++) {
     ctx.beginPath();
@@ -79,11 +79,11 @@ function generateConcentricSquaresPattern(ctx, width, height, scale, base, alpha
   return ctx;
 }
 
-function generateConcentricTrianglesPattern(ctx, width, height, scale, base, alpha) {
-  const centerX = Math.round(50 * scale) + Math.round(52 * scale);
-  const centerY = height / 2;
+function generateConcentricTrianglesPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale) {
+  const centerX = centerXOverride !== undefined ? centerXOverride : Math.round(50 * scale) + Math.round(52 * scale);
+  const centerY = centerYOverride !== undefined ? centerYOverride : height / 2;
   const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale * patternScale));
   
   for (let i = 0; i < radii.length; i++) {
     ctx.beginPath();
@@ -101,11 +101,11 @@ function generateConcentricTrianglesPattern(ctx, width, height, scale, base, alp
   return ctx;
 }
 
-function generateConcentricHexagonsPattern(ctx, width, height, scale, base, alpha) {
-  const centerX = Math.round(50 * scale) + Math.round(52 * scale);
-  const centerY = height / 2;
+function generateConcentricHexagonsPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale) {
+  const centerX = centerXOverride !== undefined ? centerXOverride : Math.round(50 * scale) + Math.round(52 * scale);
+  const centerY = centerYOverride !== undefined ? centerYOverride : height / 2;
   const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale * patternScale));
   
   for (let i = 0; i < radii.length; i++) {
     ctx.beginPath();
@@ -126,11 +126,11 @@ function generateConcentricHexagonsPattern(ctx, width, height, scale, base, alph
   return ctx;
 }
 
-function generateConcentricDiamondsPattern(ctx, width, height, scale, base, alpha) {
-  const centerX = Math.round(50 * scale) + Math.round(52 * scale);
-  const centerY = height / 2;
+function generateConcentricDiamondsPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale) {
+  const centerX = centerXOverride !== undefined ? centerXOverride : Math.round(50 * scale) + Math.round(52 * scale);
+  const centerY = centerYOverride !== undefined ? centerYOverride : height / 2;
   const baseAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale));
+  const radii = [80, 140, 200, 260, 320].map(r => Math.round(r * scale * patternScale));
   
   for (let i = 0; i < radii.length; i++) {
     ctx.beginPath();
@@ -337,15 +337,15 @@ function generateGradientSwooshPattern(ctx, width, height, scale, base, alpha) {
   return ctx;
 }
 
-function generateGradientRingsPattern(ctx, width, height, scale, base, alpha) {
-  const centerX = Math.round(118 * scale) + Math.round(52 * scale);
-  const centerY = height / 2;
+function generateGradientRingsPattern(ctx, width, height, scale, base, alpha, centerXOverride, centerYOverride, patternScale) {
+  const centerX = centerXOverride !== undefined ? centerXOverride : Math.round(118 * scale) + Math.round(52 * scale);
+  const centerY = centerYOverride !== undefined ? centerYOverride : height / 2;
   const rings = [
-    { radius: Math.round(80 * scale), opacity: alpha * 0.3 },
-    { radius: Math.round(140 * scale), opacity: alpha * 0.25 },
-    { radius: Math.round(200 * scale), opacity: alpha * 0.2 },
-    { radius: Math.round(260 * scale), opacity: alpha * 0.15 },
-    { radius: Math.round(320 * scale), opacity: alpha * 0.1 }
+    { radius: Math.round(80 * scale * patternScale), opacity: alpha * 0.3 },
+    { radius: Math.round(140 * scale * patternScale), opacity: alpha * 0.25 },
+    { radius: Math.round(200 * scale * patternScale), opacity: alpha * 0.2 },
+    { radius: Math.round(260 * scale * patternScale), opacity: alpha * 0.15 },
+    { radius: Math.round(320 * scale * patternScale), opacity: alpha * 0.1 }
   ];
   
   rings.forEach(ring => {
