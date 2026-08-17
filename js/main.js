@@ -10,38 +10,12 @@ window.logoColors = new Array(CONFIG.logoColorCount).fill(null);
 const updateSignatureDebounced = debounce(updateSignature, 120);
 
 async function updateSignature() {
-  const name = document.getElementById("fullName")?.value || "";
-  const title = document.getElementById("jobTitle")?.value || "";
-  const phone = document.getElementById("phone")?.value || "";
-  const email = window.getEmailValue ? window.getEmailValue() : (document.getElementById("email")?.value || "");
-  const website = document.getElementById("website")?.value || "";
-  const address = document.getElementById("address")?.value || "";
-  const rights1 = document.getElementById("rights1")?.value || "";
-  const rights2 = document.getElementById("rights2")?.value || "";
-  const opacity = document.getElementById("bgOpacity")?.value / 100 || 0.5;
-  const rights2Italic = document.getElementById("rights2Italic")?.checked || false;
-  const rights2UseFg = document.getElementById("rights2UseFg")?.checked || true;
-  const verticalPositionVal = parseInt(document.getElementById("verticalPosition")?.value || 60);
-  const horizontalPositionVal = parseInt(document.getElementById("horizontalPosition")?.value || 10);
-  const patternType = document.getElementById("bgPattern")?.value || 'circles';
   const signatureContent = document.getElementById("signatureContent");
-  
   if (!signatureContent) return;
 
   try {
-    const fullImage = await buildFullSignatureImage({ 
-      name, title, phone, email, website, address, rights1, rights2, 
-      rights2Italic, rights2UseFg, logoSrc: window.logoBase64, 
-      fg: window.selectedColor, ringsOpacity: opacity, 
-      ringsColor: window.selectedBgColor, 
-      verticalPositionPercent: verticalPositionVal,
-      horizontalPositionPercent: horizontalPositionVal,
-      patternType 
-    });
-
-    signatureContent.innerHTML = `
-      <img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}" style="display:block; width:${fullImage.width}px; height:auto;" />`;
-
+    const fullImage = await buildFullSignatureImage(readSignatureForm());
+    signatureContent.innerHTML = `<img src="${fullImage.src}" alt="email signature" width="${fullImage.width}" height="${fullImage.height}">`;
     const preview = document.getElementById("signature-preview");
     if (preview) preview.style.background = "#ffffff";
   } catch (err) {
@@ -122,17 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     logoUploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
-      logoUploadArea.classList.add('border-blue-400', 'bg-blue-50');
+      logoUploadArea.classList.add('is-hot');
     });
     
     logoUploadArea.addEventListener('dragleave', (e) => {
       e.preventDefault();
-      logoUploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+      logoUploadArea.classList.remove('is-hot');
     });
     
     logoUploadArea.addEventListener('drop', (e) => {
       e.preventDefault();
-      logoUploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+      logoUploadArea.classList.remove('is-hot');
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         const file = files[0];

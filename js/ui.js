@@ -270,7 +270,9 @@ function updateDropdownSelection() {
   const options = dropdown.querySelectorAll('div');
   options.forEach((option, index) => {
     if (index === window.selectedIndex) {
-      option.className = 'px-4 py-2 text-sm cursor-pointer bg-blue-100 text-blue-800 transition-colors';
+      option.className = 'px-4 py-2 text-sm cursor-pointer transition-colors';
+      option.style.background = '#DBEAFE';
+      option.style.color = '#1A1A1A';
     } else {
       option.className = 'px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 transition-colors';
     }
@@ -286,20 +288,13 @@ function selectJobTitle(title) {
   hideJobTitleDropdown();
 }
 
-// Export functions to window
 window.renderPalette = renderPalette;
 window.updateSliderVisual = updateSliderVisual;
 window.updateVerticalPositionVisual = updateVerticalPositionVisual;
 window.updateHorizontalPositionVisual = updateHorizontalPositionVisual;
 window.isValidImageFile = isValidImageFile;
 window.handleLogoUpload = handleLogoUpload;
-window.showLogoPreview = showLogoPreview;
 window.clearLogo = clearLogo;
 window.showTemplateLogoPreview = showTemplateLogoPreview;
-window.extractLogoPaletteAndRender = extractLogoPaletteAndRender;
 window.setupJobTitleAutocomplete = setupJobTitleAutocomplete;
-window.showJobTitleDropdown = showJobTitleDropdown;
-window.hideJobTitleDropdown = hideJobTitleDropdown;
-window.updateDropdownSelection = updateDropdownSelection;
-window.selectJobTitle = selectJobTitle;
 

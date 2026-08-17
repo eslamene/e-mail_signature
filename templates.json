@@ -1,7 +1,7 @@
 {
   "common": {
     "jobTitles": [
-      "Co-Founder & CEO", "Co-Founder & CTO", "Co-Founder & COO", "CEO", "CTO", "COO", "CFO",
+      "Founder & CEO", "Co-Founder & CEO", "Co-Founder & CTO", "Co-Founder & COO", "CEO", "CTO", "COO", "CFO",
       "VP Engineering", "VP Product", "VP Sales", "VP Marketing",
       "Head of Product", "Head of Engineering", "Head of Sales", "Head of Marketing", "Head of Operations",
       "Product Manager", "Senior Product Manager", "Lead Product Manager", "Technical Product Manager",
@@ -36,7 +36,9 @@
         "rights2": "This email and any attachments are confidential."
       },
       "emailDomain": "flagshipfintech.com",
-      "defaultPattern": "concentric-squares"
+      "defaultPattern": "concentric-squares",
+      "defaultFgColor": "#1A1A1A",
+      "defaultBgColor": "#1E3A8A"
     },
     {
       "key": "cashfloweg",

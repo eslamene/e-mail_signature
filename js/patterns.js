@@ -5,7 +5,7 @@ function generatePattern(patternType, color, opacity, width, height, scale, cent
   canvas.height = height;
   const ctx = canvas.getContext('2d');
   
-  const base = parseColorToRgb(color || '#D4B982');
+  const base = parseColorToRgb(color || '#1E3A8A');
   const alpha = opacity || 0.3;
   
   // Set default styles

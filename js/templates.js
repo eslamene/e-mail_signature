@@ -85,12 +85,20 @@ async function applyTemplate(key) {
           const palette = colorThief.getPalette(img, 6);
           window.logoColors = palette.map(rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`);
           if (window.renderPalette) window.renderPalette();
-          if (window.logoColors[0]) window.selectedColor = window.logoColors[0];
-          const brightest = palette.reduce((best, c) => {
-            const lum = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
-            return (!best || lum > best.lum) ? { color: `rgb(${c[0]},${c[1]},${c[2]})`, lum } : best;
-          }, null);
-          if (brightest && brightest.color) window.selectedBgColor = brightest.color;
+          if (t.defaultFgColor) {
+            window.selectedColor = t.defaultFgColor;
+          } else if (window.logoColors[0]) {
+            window.selectedColor = window.logoColors[0];
+          }
+          if (t.defaultBgColor) {
+            window.selectedBgColor = t.defaultBgColor;
+          } else {
+            const brightest = palette.reduce((best, c) => {
+              const lum = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+              return (!best || lum > best.lum) ? { color: `rgb(${c[0]},${c[1]},${c[2]})`, lum } : best;
+            }, null);
+            if (brightest && brightest.color) window.selectedBgColor = brightest.color;
+          }
         } catch (e) { /* ignore color extraction errors */ }
         if (window.updateSignature) window.updateSignature();
       };
@@ -133,9 +141,15 @@ function loadTemplates() {
         }
       }
       
+      window.templates = templates;
+
       // Refresh email domains after templates load
       if (window.refreshEmailDomains) {
         window.refreshEmailDomains();
+      }
+
+      if (window.prefillFromUrl) {
+        window.prefillFromUrl();
       }
     }).catch(() => {});
 }

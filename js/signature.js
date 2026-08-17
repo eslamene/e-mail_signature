@@ -1,49 +1,3 @@
-// Signature building functions
-
-async function buildCompositeLogo(logoSrc) {
-  const canvas = document.createElement("canvas");
-  const width = 220;
-  const height = 140;
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-
-  ctx.clearRect(0, 0, width, height);
-
-  const base = { r: 212, g: 185, b: 130 };
-  const ringAlphas = [0.26, 0.20, 0.14, 0.08, 0.04];
-  const radii = [70, 110, 150, 190, 230];
-
-  const centerX = 80;
-  const centerY = 70;
-
-  for (let i = 0; i < radii.length; i++) {
-    ctx.beginPath();
-    ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${ringAlphas[i]})`;
-    ctx.arc(centerX, centerY, radii[i], 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  const cardW = 96;
-  const cardH = 96;
-  const cardX = centerX - cardW / 2;
-  const cardY = centerY - cardH / 2;
-  ctx.fillStyle = hexToRgba('#ffffff', 1);
-  roundRect(ctx, cardX, cardY, cardW, cardH, 12);
-  ctx.fill();
-
-  const img = await loadImage(logoSrc);
-  const inset = 12;
-  const maxW = cardW - inset * 2;
-  const maxH = cardH - inset * 2;
-  const { drawW, drawH } = fitContain(img.width, img.height, maxW, maxH);
-  const dx = cardX + (cardW - drawW) / 2;
-  const dy = cardY + (cardH - drawH) / 2;
-  ctx.drawImage(img, dx, dy, drawW, drawH);
-
-  return canvas.toDataURL("image/png");
-}
-
 async function buildFullSignatureImage({ 
   name, title, phone, email, website, address = "", 
   rights1 = "", rights2 = "", rights2Italic = false, 
@@ -247,17 +201,14 @@ async function buildFullSignatureImage({
   return { src: canvas.toDataURL('image/png'), width, height };
 }
 
-// Download the final signature image as PNG
-async function downloadSignature(size = 'large') {
-  const requiredFields = [
+function getMissingSignatureFields() {
+  return [
     { id: 'fullName', name: 'Full Name' },
     { id: 'jobTitle', name: 'Job Title' },
     { id: 'email', name: 'Email', isEmail: true },
     { id: 'phone', name: 'Phone' },
     { id: 'website', name: 'Website' }
-  ];
-  
-  const missingFields = requiredFields.filter(field => {
+  ].filter(field => {
     if (field.isEmail) {
       const emailValue = window.getEmailValue ? window.getEmailValue() : '';
       return !emailValue || !emailValue.trim();
@@ -265,291 +216,229 @@ async function downloadSignature(size = 'large') {
     const element = document.getElementById(field.id);
     return !element || !element.value.trim();
   });
-  
+}
+
+function readSignatureForm() {
+  return {
+    name: document.getElementById("fullName")?.value || "",
+    title: document.getElementById("jobTitle")?.value || "",
+    phone: document.getElementById("phone")?.value || "",
+    email: window.getEmailValue ? window.getEmailValue() : (document.getElementById("email")?.value || ""),
+    website: document.getElementById("website")?.value || "",
+    address: document.getElementById("address")?.value || "",
+    rights1: document.getElementById("rights1")?.value || "",
+    rights2: document.getElementById("rights2")?.value || "",
+    rights2Italic: document.getElementById("rights2Italic")?.checked || false,
+    rights2UseFg: document.getElementById("rights2UseFg")?.checked !== false,
+    verticalPositionPercent: parseInt(document.getElementById("verticalPosition")?.value || 60),
+    horizontalPositionPercent: parseInt(document.getElementById("horizontalPosition")?.value || 10),
+    patternType: document.getElementById("bgPattern")?.value || 'circles',
+    ringsOpacity: (document.getElementById("bgOpacity")?.value || 50) / 100,
+    logoSrc: window.logoBase64,
+    fg: window.selectedColor,
+    ringsColor: window.selectedBgColor
+  };
+}
+
+async function copyToClipboard(html, plainText, successMessage) {
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([plainText], { type: 'text/plain' })
+      })
+    ]);
+    showToast(successMessage, 'success');
+    if (window.markSignatureCopied) window.markSignatureCopied();
+  } catch (err) {
+    console.error('Failed to copy signature', err);
+    showToast('Copy to clipboard failed. Please try a different browser.', 'error');
+  }
+}
+
+function signaturePlainText(fields) {
+  return [fields.name, fields.title, fields.website, `${fields.phone} | ${fields.email}`, fields.address, fields.rights1, fields.rights2]
+    .filter(Boolean)
+    .join('\n');
+}
+
+async function downloadSignature(size = 'large') {
+  const missingFields = getMissingSignatureFields();
   if (missingFields.length > 0) {
-    const fieldNames = missingFields.map(f => f.name).join(', ');
-    showToast(`Please fill in the required fields: ${fieldNames}`, 'error');
+    showToast(`Please fill in the required fields: ${missingFields.map(f => f.name).join(', ')}`, 'error');
     return;
   }
-  
-  const name = document.getElementById("fullName").value;
-  const title = document.getElementById("jobTitle").value;
-  const phone = document.getElementById("phone").value;
-  const email = window.getEmailValue ? window.getEmailValue() : document.getElementById("email").value;
-  const website = document.getElementById("website").value;
-  const opacity = document.getElementById("bgOpacity").value / 100;
-  const address = document.getElementById("address").value || "";
-  const rights1 = document.getElementById("rights1").value || "";
-  const rights2 = document.getElementById("rights2").value || "";
-  const rights2Italic = document.getElementById("rights2Italic").checked;
-  const rights2UseFg = document.getElementById("rights2UseFg").checked;
-  const verticalPositionVal = parseInt(document.getElementById("verticalPosition").value);
-  const horizontalPositionVal = parseInt(document.getElementById("horizontalPosition").value);
-  const patternType = document.getElementById("bgPattern").value || 'circles';
-  
-  const options = { 
-    name, title, phone, email, website, address, rights1, rights2, 
-    rights2Italic, rights2UseFg, logoSrc: window.logoBase64, 
-    fg: window.selectedColor, ringsOpacity: opacity, 
-    ringsColor: window.selectedBgColor, size, 
-    verticalPositionPercent: verticalPositionVal,
-    horizontalPositionPercent: horizontalPositionVal,
-    patternType 
-  };
-  
-  const fullImage = await buildFullSignatureImage(options);
-  
+
+  const fullImage = await buildFullSignatureImage({ ...readSignatureForm(), size });
   const link = document.createElement('a');
   link.href = fullImage.src;
   link.download = `signature-${size}.png`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  
+
   showToast(`Signature (${size}) downloaded as PNG.`, "success");
+  if (window.markSignatureCopied) window.markSignatureCopied();
 }
 
-// Generate pattern background as base64 image
-function generatePatternBackground(patternType, color, opacity, width, height, scale, logoCenterX, logoCenterY) {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  
-  // White background
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, width, height);
-  
-  // Generate pattern
-  const patternScale = 0.65;
-  let patternCtx = null;
-  try {
-    patternCtx = generatePattern(patternType, color, opacity, width, height, scale, logoCenterX, logoCenterY, patternScale);
-  } catch (e) {
-    console.error('Pattern render failed', e);
-  }
-  if (patternCtx && patternCtx.canvas) {
-    ctx.drawImage(patternCtx.canvas, 0, 0);
-  }
-  
-  return canvas.toDataURL('image/png');
-}
-
-// Copy HTML inline signature to clipboard - Modern clients (Zoho, Gmail, etc.)
-async function copyHtmlSignature() {
-  await copyHtmlSignatureWithPattern(true);
-}
-
-// Copy HTML inline signature - Outlook compatible (no pattern background)
-async function copyHtmlSignatureOutlook() {
-  await copyHtmlSignatureWithPattern(false);
-}
-
-// Copy HTML inline signature - Text only (no images)
-async function copyHtmlSignatureTextOnly() {
-  await copyHtmlSignatureWithPattern(false, false);
-}
-
-// Core function to generate HTML signature
-async function copyHtmlSignatureWithPattern(includePattern = true, includeImages = true) {
-  const requiredFields = [
-    { id: 'fullName', name: 'Full Name' },
-    { id: 'jobTitle', name: 'Job Title' },
-    { id: 'email', name: 'Email', isEmail: true },
-    { id: 'phone', name: 'Phone' },
-    { id: 'website', name: 'Website' }
-  ];
-  
-  const missingFields = requiredFields.filter(field => {
-    if (field.isEmail) {
-      const emailValue = window.getEmailValue ? window.getEmailValue() : '';
-      return !emailValue || !emailValue.trim();
-    }
-    const element = document.getElementById(field.id);
-    return !element || !element.value.trim();
-  });
-  
+// Designed email version: the preview image, so pattern and background stay intact
+async function copyDesignedSignatureImage(size = 'large') {
+  const missingFields = getMissingSignatureFields();
   if (missingFields.length > 0) {
-    const fieldNames = missingFields.map(f => f.name).join(', ');
-    showToast(`Please fill in the required fields: ${fieldNames}`, 'error');
+    showToast(`Please fill in the required fields: ${missingFields.map(f => f.name).join(', ')}`, 'error');
     return;
   }
-  
-  const name = document.getElementById("fullName").value;
-  const title = document.getElementById("jobTitle").value;
-  const phone = document.getElementById("phone").value;
-  const email = window.getEmailValue ? window.getEmailValue() : document.getElementById("email").value;
-  const website = document.getElementById("website").value;
-  const opacity = document.getElementById("bgOpacity").value / 100;
-  const address = document.getElementById("address").value || "";
-  const rights1 = document.getElementById("rights1").value || "";
-  const rights2 = document.getElementById("rights2").value || "";
-  const rights2Italic = document.getElementById("rights2Italic").checked;
-  const rights2UseFg = document.getElementById("rights2UseFg").checked;
-  const patternType = document.getElementById("bgPattern").value || 'circles';
-  
-  // Use large size for HTML signature
-  const scale = 1.5; // large
-  const width = Math.round(600 * scale);
-  const height = Math.round(144 * scale);
-  const centerY = height / 2;
-  const layoutScale = 0.7;
-  const imgBox = Math.round(104 * scale * layoutScale);
-  const imgX = Math.round(50 * scale);
-  const logoCenterX = imgX + Math.round(imgBox / 2);
-  const logoCenterY = centerY;
-  
-  // Generate pattern background as base64 (only if includePattern is true)
-  let patternBg = '';
-  if (includePattern) {
-    patternBg = generatePatternBackground(
-      patternType, 
-      window.selectedBgColor || '#D4B982', 
-      opacity, 
-      width, 
-      height, 
-      scale, 
-      logoCenterX, 
-      logoCenterY
-    );
-  }
-  
-  const logoSrc = includeImages ? (window.logoBase64 || '') : '';
-  const primary = window.selectedColor || '#111111';
-  const bgColor = window.selectedBgColor || '#D4B982';
-  
-  const escapeHtml = (str) => (str || '').replace(/[&<>"']/g, (ch) => {
+
+  const fields = readSignatureForm();
+  const fullImage = await buildFullSignatureImage({ ...fields, size });
+  const html = `<img src="${fullImage.src}" alt="${escapeHtml(fields.name)}" width="${fullImage.width}" height="${fullImage.height}" style="display:block;border:0;width:${fullImage.width}px;height:auto;">`;
+  await copyToClipboard(
+    html,
+    signaturePlainText(fields),
+    'Designed email version copied. Paste it into your email signature settings.'
+  );
+}
+
+async function copyHtmlSignature() {
+  await copyDesignedSignatureImage('large');
+}
+
+async function copyHtmlSignatureOutlook() {
+  await copyDesignedSignatureImage('medium');
+}
+
+async function copyHtmlSignatureTextOnly() {
+  await copyTextSignatureHtml();
+}
+
+function escapeHtml(str) {
+  return (str || '').replace(/[&<>"']/g, (ch) => {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
     return map[ch] || ch;
   });
-  
-  // Load icons as base64 (only if includeImages is true)
-  let globeIconBase64 = '';
-  let phoneIconBase64 = '';
-  let emailIconBase64 = '';
-  
-  if (includeImages) {
-    const [globeIcon, phoneIcon, emailIcon] = await Promise.all([
-      loadTintedSvg('icons/global.svg', primary),
-      loadTintedSvg('icons/user-id.svg', primary),
-      loadTintedSvg('icons/inbox.svg', primary)
+}
+
+function websiteHref(website) {
+  const value = (website || '').trim();
+  if (!value) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  return `https://${value}`;
+}
+
+async function iconToDataUrl(iconImage, size = 14) {
+  if (!iconImage) return '';
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(iconImage, 0, 0, size, size);
+  return canvas.toDataURL('image/png');
+}
+
+function iconImg(src, size = 14) {
+  if (!src) return '';
+  return `<img src="${src}" alt="" width="${size}" height="${size}" style="display:inline-block;border:0;width:${size}px;height:${size}px;vertical-align:middle;margin-right:6px;">`;
+}
+
+// Compact HTML fallback without the designed card
+async function copyTextSignatureHtml() {
+  const missingFields = getMissingSignatureFields();
+  if (missingFields.length > 0) {
+    showToast(`Please fill in the required fields: ${missingFields.map(f => f.name).join(', ')}`, 'error');
+    return;
+  }
+
+  const fields = readSignatureForm();
+  const name = fields.name;
+  const title = fields.title;
+  const phone = fields.phone;
+  const email = fields.email;
+  const website = fields.website;
+  const address = fields.address;
+  const rights1 = fields.rights1;
+  const rights2 = fields.rights2;
+  const rights2Italic = fields.rights2Italic;
+  const logoSrc = fields.logoSrc || '';
+  const nameColor = '#111111';
+  const titleColor = '#555555';
+  const textColor = '#222222';
+  const mutedColor = '#666666';
+  const font = 'Arial,Helvetica,sans-serif';
+
+  let logoW = 72;
+  let logoH = 72;
+  if (logoSrc) {
+    try {
+      const img = await loadImage(logoSrc);
+      const fitted = fitContain(img.width, img.height, 72, 72);
+      logoW = Math.max(1, fitted.drawW);
+      logoH = Math.max(1, fitted.drawH);
+    } catch (e) {
+      // Keep default logo box if the image cannot be measured
+    }
+  }
+
+  let globeIcon = '';
+  let phoneIcon = '';
+  let emailIcon = '';
+  {
+    const [globe, phoneSvg, inbox] = await Promise.all([
+      loadTintedSvg('icons/global.svg', nameColor),
+      loadTintedSvg('icons/user-id.svg', nameColor),
+      loadTintedSvg('icons/inbox.svg', nameColor)
     ]);
-    
-    if (globeIcon) {
-      const iconCanvas = document.createElement('canvas');
-      iconCanvas.width = 18;
-      iconCanvas.height = 18;
-      const iconCtx = iconCanvas.getContext('2d');
-      iconCtx.drawImage(globeIcon, 0, 0, 18, 18);
-      globeIconBase64 = iconCanvas.toDataURL('image/png');
-    }
-    if (phoneIcon) {
-      const iconCanvas = document.createElement('canvas');
-      iconCanvas.width = 18;
-      iconCanvas.height = 18;
-      const iconCtx = iconCanvas.getContext('2d');
-      iconCtx.drawImage(phoneIcon, 0, 0, 18, 18);
-      phoneIconBase64 = iconCanvas.toDataURL('image/png');
-    }
-    if (emailIcon) {
-      const iconCanvas = document.createElement('canvas');
-      iconCanvas.width = 18;
-      iconCanvas.height = 18;
-      const iconCtx = iconCanvas.getContext('2d');
-      iconCtx.drawImage(emailIcon, 0, 0, 18, 18);
-      emailIconBase64 = iconCanvas.toDataURL('image/png');
-    }
+    globeIcon = await iconToDataUrl(globe);
+    phoneIcon = await iconToDataUrl(phoneSvg);
+    emailIcon = await iconToDataUrl(inbox);
   }
-  
-  // Build HTML structure with pattern background, logo, and text
-  // Use pure table-based layout for maximum email client compatibility
-  const bgStyle = includePattern && patternBg 
-    ? `background-image:url('${patternBg}');background-repeat:no-repeat;background-size:${width}px ${height}px;background-position:left top;`
-    : `background-color:${bgColor};`;
-  
+
+  const logoCell = logoSrc
+    ? `<td style="padding:0 16px 0 0;vertical-align:top;width:${logoW}px;">
+        <img src="${logoSrc}" alt="" width="${logoW}" height="${logoH}" style="display:block;border:0;width:${logoW}px;height:${logoH}px;">
+      </td>`
+    : '';
+
+  const footerRows = [
+    address ? `<tr><td style="font-family:${font};font-size:12px;color:${mutedColor};padding:0 0 2px 0;line-height:1.4;">${escapeHtml(address)}</td></tr>` : '',
+    rights1 ? `<tr><td style="font-family:${font};font-size:12px;color:${mutedColor};padding:0 0 2px 0;line-height:1.4;">${escapeHtml(rights1)}</td></tr>` : '',
+    rights2 ? `<tr><td style="font-family:${font};font-size:12px;color:${mutedColor};padding:0;line-height:1.4;${rights2Italic ? 'font-style:italic;' : ''}">${escapeHtml(rights2)}</td></tr>` : ''
+  ].filter(Boolean).join('');
+
   const html = `
-  <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:${width}px;height:${height}px;background-color:#ffffff;">
-    <tr>
-      <td style="padding:0;${bgStyle}">
-        ${includePattern && patternBg ? `<!--[if mso]>
-        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" style="width:${width}px;height:${height}px;position:absolute;left:0;top:0;" strokecolor="none">
-          <v:fill type="frame" src="${patternBg}" color="#ffffff" />
-        </v:rect>
-        <![endif]-->` : ''}
-        <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
-          <tr>
-            <td style="padding:0;vertical-align:middle;">
-              <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                <tr>
-                  <td style="padding:0 ${Math.round(28 * scale * layoutScale)}px 0 ${Math.round(50 * scale)}px;vertical-align:middle;">
-                    ${logoSrc ? `<img src="${logoSrc}" alt="Logo" width="${imgBox}" height="${imgBox}" style="display:block;width:${imgBox}px;height:${imgBox}px;object-fit:contain;border:0;" />` : ''}
-                  </td>
-                  <td style="padding:0;vertical-align:top;">
-                    <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
-                      <tr>
-                        <td style="font-weight:700;font-size:${Math.round(24 * scale * 0.5)}px;color:${primary};padding:0 0 ${Math.round(2 * scale * 0.5)}px 0;line-height:1.2;">${escapeHtml(name)}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-weight:500;font-size:${Math.round(18 * scale * 0.5)}px;color:rgba(17,24,39,0.7);padding:0 0 ${Math.round(4 * scale * 0.5)}px 0;line-height:1.2;">${escapeHtml(title)}</td>
-                      </tr>
-                      <tr>
-                        <td style="font-size:${Math.round(18 * scale * 0.5)}px;color:rgba(17,24,39,0.9);padding:0 0 ${Math.round(4 * scale * 0.5)}px 0;line-height:1.2;">
-                          ${includeImages && globeIconBase64 ? `<img src="${globeIconBase64}" alt="" width="${Math.round(18 * scale * 0.5)}" height="${Math.round(18 * scale * 0.5)}" style="vertical-align:middle;width:${Math.round(18 * scale * 0.5)}px;height:${Math.round(18 * scale * 0.5)}px;margin-right:${Math.round(8 * scale * 0.5)}px;border:0;display:inline-block;" />` : '🌐 '}
-                          <a href="${escapeHtml(website)}" style="color:rgba(17,24,39,0.9);text-decoration:none;">${escapeHtml(website)}</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="font-size:${Math.round(18 * scale * 0.5)}px;color:rgba(17,24,39,0.9);padding:0 0 ${Math.round(12 * scale * 0.5)}px 0;line-height:1.2;">
-                          ${includeImages && phoneIconBase64 ? `<img src="${phoneIconBase64}" alt="" width="${Math.round(18 * scale * 0.5)}" height="${Math.round(18 * scale * 0.5)}" style="vertical-align:middle;width:${Math.round(18 * scale * 0.5)}px;height:${Math.round(18 * scale * 0.5)}px;margin-right:${Math.round(8 * scale * 0.5)}px;border:0;display:inline-block;" />` : '📞 '}
-                          ${escapeHtml(phone)}
-                          <span style="padding:0 ${Math.round(8 * scale * 0.5)}px;color:rgba(107,114,128,0.9);">|</span>
-                          ${includeImages && emailIconBase64 ? `<img src="${emailIconBase64}" alt="" width="${Math.round(18 * scale * 0.5)}" height="${Math.round(18 * scale * 0.5)}" style="vertical-align:middle;width:${Math.round(18 * scale * 0.5)}px;height:${Math.round(18 * scale * 0.5)}px;margin-right:${Math.round(8 * scale * 0.5)}px;border:0;display:inline-block;" />` : '✉️ '}
-                          <a href="mailto:${escapeHtml(email)}" style="color:rgba(17,24,39,0.9);text-decoration:none;">${escapeHtml(email)}</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:${Math.round(6 * scale * 0.5)}px 0;">
-                          <hr style="border:none;border-top:1px solid rgba(107,114,128,0.3);margin:0;padding:0;" />
-                        </td>
-                      </tr>
-                      ${address ? `
-                      <tr>
-                        <td style="font-size:${Math.round(14 * scale * 0.5)}px;color:rgba(55,65,81,0.9);padding:${Math.round(10 * scale * 0.5)}px 0 ${Math.round(2 * scale * 0.5)}px 0;line-height:1.2;">${escapeHtml(address)}</td>
-                      </tr>` : ''}
-                      ${rights1 ? `
-                      <tr>
-                        <td style="font-size:${Math.round(14 * scale * 0.5)}px;color:rgba(17,24,39,0.9);padding:0 0 ${Math.round(2 * scale * 0.5)}px 0;line-height:1.2;">${escapeHtml(rights1)}</td>
-                      </tr>` : ''}
-                      ${rights2 ? `
-                      <tr>
-                        <td style="font-size:${Math.round(14 * scale * 0.5)}px;color:${rights2UseFg ? primary : 'rgba(107,114,128,0.95)'};padding:0;line-height:1.2;${rights2Italic ? 'font-style:italic;' : ''}">${escapeHtml(rights2)}</td>
-                      </tr>` : ''}
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>`;
-  
-  try {
-    const blob = new Blob([html], { type: 'text/html' });
-    const data = [new ClipboardItem({ 'text/html': blob })];
-    await navigator.clipboard.write(data);
-    let message = 'HTML signature copied. Paste directly into your email signature settings.';
-    if (!includePattern && includeImages) {
-      message = 'Outlook-compatible HTML signature copied (no pattern background).';
-    } else if (!includeImages) {
-      message = 'Text-only HTML signature copied (no images).';
-    }
-    showToast(message, 'success');
-  } catch (err) {
-    console.error('Failed to copy HTML signature', err);
-    showToast('Copy to clipboard failed. Please try a different browser.', 'error');
-  }
+<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
+  <tr>
+    ${logoCell}
+    <td style="padding:0;vertical-align:top;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:${font};">
+        <tr><td style="font-family:${font};font-size:16px;font-weight:bold;color:${nameColor};padding:0 0 2px 0;line-height:1.3;">${escapeHtml(name)}</td></tr>
+        <tr><td style="font-family:${font};font-size:13px;color:${titleColor};padding:0 0 8px 0;line-height:1.3;">${escapeHtml(title)}</td></tr>
+        <tr>
+          <td style="font-family:${font};font-size:13px;color:${textColor};padding:0 0 3px 0;line-height:1.4;">
+            ${iconImg(globeIcon)}<a href="${escapeHtml(websiteHref(website))}" style="color:${textColor};text-decoration:none;">${escapeHtml(website)}</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-family:${font};font-size:13px;color:${textColor};padding:0 0 10px 0;line-height:1.4;">
+            ${iconImg(phoneIcon)}${escapeHtml(phone)}
+            <span style="color:${mutedColor};padding:0 6px;">|</span>
+            ${iconImg(emailIcon)}<a href="mailto:${escapeHtml(email)}" style="color:${textColor};text-decoration:none;">${escapeHtml(email)}</a>
+          </td>
+        </tr>
+        ${footerRows ? `
+        <tr>
+          <td style="padding:0 0 8px 0;border-top:1px solid #D0D0D0;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+        ${footerRows}` : ''}
+      </table>
+    </td>
+  </tr>
+</table>`;
+
+  await copyToClipboard(
+    html,
+    signaturePlainText(fields),
+    'Text-only email version copied (no designed background).'
+  );
 }
 
 // Export to window for onclick handlers

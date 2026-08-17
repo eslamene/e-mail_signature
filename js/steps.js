@@ -20,7 +20,7 @@ const steps = [
   { id: 3, title: "Contact" },
   { id: 4, title: "Additional" },
   { id: 5, title: "Styling" },
-  { id: 6, title: "Preview" }
+  { id: 6, title: "Export" }
 ];
 
 function initSteps() {
@@ -32,50 +32,41 @@ function initSteps() {
 function renderStepIndicator() {
   const indicator = document.getElementById('stepIndicator');
   if (!indicator) return;
-  
-  indicator.innerHTML = steps.map((step, index) => {
+
+  indicator.innerHTML = steps.map((step) => {
     const isActive = step.id === currentStep;
     const isCompleted = step.id < currentStep;
-    const stepNumber = step.id;
     const icon = stepIcons[step.id] || '';
-    
+    const state = isActive ? 'is-active' : isCompleted ? 'is-done' : 'is-todo';
+
     return `
-      <div class="flex items-center flex-1">
-        <div class="flex flex-col items-center flex-1 relative">
-          <button 
-            data-step="${step.id}" 
-            class="step-button flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${
-              isActive 
-                ? 'bg-blue-600 border-blue-600 text-white shadow-md' 
-                : isCompleted 
-                  ? 'bg-green-500 border-green-500 text-white' 
-                  : 'bg-white border-gray-300 text-gray-400 hover:border-gray-400'
-            }"
-            ${step.id <= currentStep ? '' : 'cursor-not-allowed opacity-50'}
-          >
-            ${icon}
-          </button>
-          <span class="mt-2 text-xs font-medium text-center ${
-            isActive ? 'text-blue-600 font-semibold' : isCompleted ? 'text-green-600' : 'text-gray-500'
-          }">${step.title}</span>
-          ${isActive ? '<div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-blue-600 rounded-full"></div>' : ''}
-        </div>
-        ${index < steps.length - 1 ? `
-          <div class="flex-1 h-0.5 mx-1 ${
-            step.id < currentStep ? 'bg-green-500' : 'bg-gray-200'
-          } transition-colors duration-200"></div>
-        ` : ''}
-      </div>
+      <button
+        type="button"
+        data-step="${step.id}"
+        class="step-rail-item ${state}"
+        ${step.id <= currentStep ? '' : 'disabled'}
+      >
+        <span class="step-rail-icon">${icon}</span>
+        <span class="step-rail-copy">
+          <span class="step-rail-index">Step ${step.id}</span>
+          <span class="step-rail-title">${step.title}</span>
+        </span>
+      </button>
     `;
   }).join('');
-  
-  // Add click handlers
-  document.querySelectorAll('.step-button').forEach(btn => {
-    const stepNum = parseInt(btn.dataset.step);
+
+  indicator.querySelectorAll('.step-rail-item').forEach((btn) => {
+    const stepNum = parseInt(btn.dataset.step, 10);
     if (stepNum <= currentStep) {
       btn.addEventListener('click', () => goToStep(stepNum));
     }
   });
+
+  const progress = document.getElementById('stepProgress');
+  const current = steps.find((step) => step.id === currentStep);
+  if (progress && current) {
+    progress.textContent = `Step ${currentStep} of ${totalSteps} · ${current.title}`;
+  }
 }
 
 function showStep(stepNumber) {
@@ -100,11 +91,10 @@ function showStep(stepNumber) {
   // Update step indicator
   renderStepIndicator();
   
-  // Update navigation buttons
   updateNavigationButtons();
-  
-  // Scroll to top of form
-  document.querySelector('.bg-white.rounded-xl').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const wizardPane = document.getElementById('wizardPane');
+  if (wizardPane) wizardPane.scrollTop = 0;
 }
 
 function updateNavigationButtons() {
@@ -118,25 +108,19 @@ function updateNavigationButtons() {
   
   if (prevBtn) {
     prevBtn.disabled = currentStep === 1;
-    prevBtn.classList.toggle('opacity-50', currentStep === 1);
-    prevBtn.classList.toggle('cursor-not-allowed', currentStep === 1);
   }
   
   if (nextBtn) {
     if (currentStep === totalSteps) {
       nextBtn.textContent = 'Complete';
-      nextBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-      nextBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-      // Disable Complete button until user copies signature
+      nextBtn.classList.add('btn-complete');
+      nextBtn.classList.remove('btn-primary');
       nextBtn.disabled = !hasCopiedSignature;
-      nextBtn.classList.toggle('opacity-50', !hasCopiedSignature);
-      nextBtn.classList.toggle('cursor-not-allowed', !hasCopiedSignature);
     } else {
       nextBtn.textContent = 'Next';
-      nextBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-      nextBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+      nextBtn.classList.add('btn-primary');
+      nextBtn.classList.remove('btn-complete');
       nextBtn.disabled = false;
-      nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     }
   }
 }
@@ -170,7 +154,7 @@ function setupStepNavigation() {
         } else {
           // User hasn't copied yet
           if (window.showToast) {
-            window.showToast('Please copy your signature first using one of the copy buttons above.', 'error');
+            window.showToast('Please download or copy your signature first using one of the buttons above.', 'error');
           }
         }
       } else if (validateCurrentStep()) {
@@ -257,8 +241,10 @@ function resetProcess() {
   if (emailUsername) emailUsername.value = '';
   
   // Clear checkboxes
-  document.getElementById('rights2Italic')?.removeAttribute('checked');
-  document.getElementById('rights2UseFg')?.setAttribute('checked', 'checked');
+  const rights2Italic = document.getElementById('rights2Italic');
+  const rights2UseFg = document.getElementById('rights2UseFg');
+  if (rights2Italic) rights2Italic.checked = false;
+  if (rights2UseFg) rights2UseFg.checked = true;
   
   // Reset logo
   if (window.clearLogo) {
@@ -286,8 +272,8 @@ function resetProcess() {
     window.updateSignature();
   }
   
-  // Scroll to top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const wizardPane = document.getElementById('wizardPane');
+  if (wizardPane) wizardPane.scrollTop = 0;
 }
 
 function markSignatureCopied() {
@@ -298,6 +284,5 @@ function markSignatureCopied() {
 // Export functions
 window.initSteps = initSteps;
 window.goToStep = goToStep;
-window.currentStep = currentStep;
 window.markSignatureCopied = markSignatureCopied;
 

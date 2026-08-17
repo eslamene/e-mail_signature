@@ -1,0 +1,13 @@
+{
+  "employees": [
+    {
+      "id": "eslam.negm",
+      "template": "Flagshipfintech",
+      "fullName": "Eslam Negm",
+      "jobTitle": "Founder & CEO",
+      "phone": "+201004331083",
+      "email": "eslam.negm@flagshipfintech.com",
+      "website": "www.flagshipfintech.com"
+    }
+  ]
+}

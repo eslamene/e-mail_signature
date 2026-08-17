@@ -1,8 +1,7 @@
 // Email domain management
 
-let currentEmailDomain = ""; // Will be set from template or first available domain
+let currentEmailDomain = "";
 let availableDomains = [];
-let isCustomDomain = false;
 
 function initEmailDomain() {
   // Extract domains from templates
@@ -120,7 +119,7 @@ function setupEmailDomainListeners() {
       updateEmailField();
       if (window.updateSignature) window.updateSignature();
       
-      if (pastedText.includes('@') || domainPattern.test(pastedText)) {
+      if (pastedText.includes('@') || pastedText.includes('.')) {
         if (window.showToast) {
           window.showToast('Only username extracted. Domain is selected separately.', 'error');
         }
@@ -167,8 +166,8 @@ function populateDomainOptions() {
   availableDomains.forEach(domain => {
     const option = document.createElement('button');
     option.type = 'button';
-    option.className = `w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
-      domain === currentEmailDomain ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+    option.className = `domain-option w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+      domain === currentEmailDomain ? 'is-selected' : 'text-gray-700'
     }`;
     option.textContent = `@${domain}`;
     option.addEventListener('click', () => {
@@ -212,13 +211,12 @@ function showCustomDomainInput() {
       showToast('Invalid domain format. Enter domain only (e.g., example.com)', 'error');
       return;
     }
-    setEmailDomain(domain, true);
+    setEmailDomain(domain);
   }
 }
 
-function setEmailDomain(domain, isCustom = false) {
+function setEmailDomain(domain) {
   currentEmailDomain = domain;
-  isCustomDomain = isCustom;
   updateEmailDomainDisplay();
   updateEmailField();
   if (window.updateSignature) window.updateSignature();
@@ -278,16 +276,25 @@ function getEmailValue() {
   return emailField ? emailField.value : '';
 }
 
+function setEmailFromAddress(email) {
+  if (!email || !email.includes('@')) return;
+  const [username, domain] = email.split('@');
+  const usernameInput = document.getElementById('emailUsername');
+  if (usernameInput) usernameInput.value = (username || '').trim();
+  if (domain) setEmailDomain(domain.trim());
+  else updateEmailField();
+}
+
 function setEmailFromTemplate(domain, templateKey = null) {
   // Priority: Use emailDomain from templates.json first
   if (domain) {
     // Use the emailDomain from templates.json
-    setEmailDomain(domain, false);
+    setEmailDomain(domain);
   } else if (templateKey) {
     // Fallback: Only form from template key if emailDomain is not in templates.json
     const formedDomain = formDomainFromTemplateKey(templateKey);
     if (formedDomain) {
-      setEmailDomain(formedDomain, false);
+      setEmailDomain(formedDomain);
     }
   }
 }
@@ -295,6 +302,7 @@ function setEmailFromTemplate(domain, templateKey = null) {
 // Export functions
 window.initEmailDomain = initEmailDomain;
 window.refreshEmailDomains = refreshEmailDomains;
+window.setEmailFromAddress = setEmailFromAddress;
 window.setEmailFromTemplate = setEmailFromTemplate;
 window.getEmailValue = getEmailValue;
 window.validateEmailField = validateEmailField;
