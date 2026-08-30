@@ -71,6 +71,42 @@
       },
       "emailDomain": "79-pay.com",
       "defaultPattern": "circles"
+    },
+    {
+      "key": "velo",
+      "label": "Velo",
+      "logos": ["logos/Velo.svg"],
+      "fields": {
+        "fullName": "",
+        "jobTitle": "",
+        "phone": "",
+        "website": "www.velo.com",
+        "address": "",
+        "rights1": "© Velo. All rights reserved.",
+        "rights2": "This email and any attachments are confidential."
+      },
+      "emailDomain": "velo.com",
+      "defaultPattern": "gradient-arrows",
+      "defaultFgColor": "#1A1A1A",
+      "defaultBgColor": "#FED627"
+    },
+    {
+      "key": "lynq-plus",
+      "label": "Lynq+",
+      "logos": ["logos/Lynq+.svg"],
+      "fields": {
+        "fullName": "",
+        "jobTitle": "",
+        "phone": "",
+        "website": "www.lynqplus.com",
+        "address": "",
+        "rights1": "© Lynq+. All rights reserved.",
+        "rights2": "This email and any attachments are confidential."
+      },
+      "emailDomain": "lynqplus.com",
+      "defaultPattern": "gradient-rings",
+      "defaultFgColor": "#0A0A0A",
+      "defaultBgColor": "#F5F0E8"
     }
   ]
 }
