@@ -80,13 +80,13 @@
         "fullName": "",
         "jobTitle": "",
         "phone": "",
-        "website": "www.velo.com",
+        "website": "www.velocityaccept.com",
         "address": "",
         "rights1": "© Velo. All rights reserved.",
         "rights2": "This email and any attachments are confidential."
       },
-      "emailDomain": "velo.com",
-      "defaultPattern": "gradient-arrows",
+      "emailDomain": "velocityaccept.com",
+      "defaultPattern": "concentric-squares",
       "defaultFgColor": "#1A1A1A",
       "defaultBgColor": "#FED627"
     },
