@@ -77,31 +77,51 @@ async function applyTemplate(key) {
       if (window.showTemplateLogoPreview) {
         window.showTemplateLogoPreview(dataUrl, t.logos ? t.logos[0] : t.logo);
       }
-      const img = new Image();
-      img.src = window.logoBase64;
-      img.onload = () => {
-        const colorThief = new ColorThief();
+      const applyExtractedPalette = (img) => {
+        const brand = templateBrandColors(t);
+        let extracted = [];
         try {
+          const colorThief = new ColorThief();
           const palette = colorThief.getPalette(img, 6);
-          window.logoColors = palette.map(rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`);
-          if (window.renderPalette) window.renderPalette();
-          if (t.defaultFgColor) {
-            window.selectedColor = t.defaultFgColor;
-          } else if (window.logoColors[0]) {
-            window.selectedColor = window.logoColors[0];
-          }
-          if (t.defaultBgColor) {
-            window.selectedBgColor = t.defaultBgColor;
-          } else {
-            const brightest = palette.reduce((best, c) => {
-              const lum = 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
-              return (!best || lum > best.lum) ? { color: `rgb(${c[0]},${c[1]},${c[2]})`, lum } : best;
-            }, null);
-            if (brightest && brightest.color) window.selectedBgColor = brightest.color;
-          }
+          extracted = palette.map(rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`);
         } catch (e) { /* ignore color extraction errors */ }
+        window.logoColors = uniqueColors([...brand, ...extracted]);
+        if (t.defaultFgColor) {
+          window.selectedColor = t.defaultFgColor;
+        } else if (window.logoColors[0]) {
+          window.selectedColor = window.logoColors[0];
+        }
+        if (t.defaultBgColor) {
+          window.selectedBgColor = t.defaultBgColor;
+        } else {
+          const brightest = extracted.reduce((best, color) => {
+            const c = parseColorToRgb(color);
+            const lum = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+            return (!best || lum > best.lum) ? { color, lum } : best;
+          }, null);
+          if (brightest && brightest.color) window.selectedBgColor = brightest.color;
+        }
+        if (window.renderPalette) window.renderPalette();
         if (window.updateSignature) window.updateSignature();
       };
+
+      const logoPath = (t.logos && t.logos[0]) || t.logo || "";
+      const isSvg = /\.svg(\?|$)/i.test(logoPath) || (dataUrl || "").startsWith("data:image/svg");
+      if (isSvg && typeof rasterizeSvgToPng === "function") {
+        rasterizeSvgToPng(dataUrl, 512, 512).then((pngDataUrl) => {
+          const img = new Image();
+          img.src = pngDataUrl;
+          img.onload = () => applyExtractedPalette(img);
+        }).catch(() => {
+          const img = new Image();
+          img.src = window.logoBase64;
+          img.onload = () => applyExtractedPalette(img);
+        });
+      } else {
+        const img = new Image();
+        img.src = window.logoBase64;
+        img.onload = () => applyExtractedPalette(img);
+      }
     } else {
       if (window.clearLogo) window.clearLogo();
       showToast("Template logo not found. Place files under /logos.", "error");

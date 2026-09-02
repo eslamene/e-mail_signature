@@ -358,6 +358,11 @@ body {
   border-color: var(--ink);
 }
 
+.color-swatch.is-selected {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ink);
+}
+
 #signature-preview {
   flex: 1;
   min-height: 132px;

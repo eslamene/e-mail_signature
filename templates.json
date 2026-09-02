@@ -87,8 +87,9 @@
       },
       "emailDomain": "velocityaccept.com",
       "defaultPattern": "concentric-squares",
-      "defaultFgColor": "#1A1A1A",
-      "defaultBgColor": "#FED627"
+      "defaultFgColor": "#000000",
+      "defaultBgColor": "#FED627",
+      "paletteColors": ["#000000", "#FED627"]
     },
     {
       "key": "lynq-plus",
@@ -106,7 +107,8 @@
       "emailDomain": "lynqplus.com",
       "defaultPattern": "gradient-rings",
       "defaultFgColor": "#0A0A0A",
-      "defaultBgColor": "#F5F0E8"
+      "defaultBgColor": "#F5F0E8",
+      "paletteColors": ["#0A0A0A", "#F5F0E8", "#D4AF37", "#B08D57"]
     }
   ]
 }

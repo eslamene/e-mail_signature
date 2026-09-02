@@ -80,4 +80,31 @@ function showToast(message, type = "success") {
   }, 2200);
 }
 
+function colorsMatch(a, b, tolerance = 18) {
+  if (!a || !b) return false;
+  const ca = parseColorToRgb(a);
+  const cb = parseColorToRgb(b);
+  return Math.abs(ca.r - cb.r) + Math.abs(ca.g - cb.g) + Math.abs(ca.b - cb.b) < tolerance;
+}
+
+function uniqueColors(colors) {
+  const out = [];
+  (colors || []).forEach((c) => {
+    if (c && !out.some((existing) => colorsMatch(existing, c))) out.push(c);
+  });
+  return out;
+}
+
+function templateBrandColors(template) {
+  if (!template) return [];
+  const colors = [];
+  if (Array.isArray(template.paletteColors)) colors.push(...template.paletteColors);
+  if (template.defaultFgColor) colors.push(template.defaultFgColor);
+  if (template.defaultBgColor) colors.push(template.defaultBgColor);
+  return uniqueColors(colors);
+}
+
 window.showToast = showToast;
+window.colorsMatch = colorsMatch;
+window.uniqueColors = uniqueColors;
+window.templateBrandColors = templateBrandColors;

@@ -1,41 +1,42 @@
 // UI interaction functions
 
+function paletteSwatches() {
+  const brand = (window.logoColors || []).filter(Boolean);
+  return uniqueColors([...brand, ...CONFIG.baseColors]);
+}
+
 function renderPalette() {
   const colorPalette = document.getElementById("colorPalette");
   const bgColorPalette = document.getElementById("bgColorPalette");
   if (!colorPalette || !bgColorPalette) return;
-  
+
+  const colors = paletteSwatches();
+
   colorPalette.innerHTML = "";
-  [...CONFIG.baseColors, ...(window.logoColors || [])].forEach(c => {
+  colors.forEach(c => {
     const swatch = document.createElement("div");
     swatch.className = "color-swatch";
-    if (c) {
-      swatch.style.background = c;
-      swatch.onclick = () => {
-        window.selectedColor = c;
-        if (window.updateSignature) window.updateSignature();
-      };
-    } else {
-      swatch.style.background = "repeating-conic-gradient(#e5e7eb 0% 25%, transparent 0% 50%) 50% / 10px 10px";
-      swatch.style.cursor = "not-allowed";
-    }
+    swatch.style.background = c;
+    if (colorsMatch(c, window.selectedColor)) swatch.classList.add("is-selected");
+    swatch.onclick = () => {
+      window.selectedColor = c;
+      renderPalette();
+      if (window.updateSignature) window.updateSignature();
+    };
     colorPalette.appendChild(swatch);
   });
 
   bgColorPalette.innerHTML = "";
-  [...CONFIG.baseColors, ...(window.logoColors || [])].forEach(c => {
+  colors.forEach(c => {
     const swatch = document.createElement("div");
     swatch.className = "color-swatch";
-    if (c) {
-      swatch.style.background = c;
-      swatch.onclick = () => { 
-        window.selectedBgColor = c; 
-        if (window.updateSignature) window.updateSignature(); 
-      };
-    } else {
-      swatch.style.background = "repeating-conic-gradient(#e5e7eb 0% 25%, transparent 0% 50%) 50% / 10px 10px";
-      swatch.style.cursor = "not-allowed";
-    }
+    swatch.style.background = c;
+    if (colorsMatch(c, window.selectedBgColor)) swatch.classList.add("is-selected");
+    swatch.onclick = () => {
+      window.selectedBgColor = c;
+      renderPalette();
+      if (window.updateSignature) window.updateSignature();
+    };
     bgColorPalette.appendChild(swatch);
   });
 }
